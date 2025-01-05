@@ -3,11 +3,11 @@ import { View, StyleSheet, ScrollView, TouchableOpacity, Text } from 'react-nati
 import { FontAwesome } from '@expo/vector-icons';
 
 const CATEGORIES = [
-  { id: '1', name: 'WFH', icon: 'home', color: '#4CAF50' },
-  { id: '2', name: 'Internship', icon: 'graduation-cap', color: '#2196F3' },
-  { id: '3', name: 'Drive', icon: 'car', color: '#FF9800' },
-  { id: '4', name: 'Batches', icon: 'users', color: '#9C27B0' },
-  { id: '5', name: 'Openings', icon: 'briefcase', color: '#F44336' },
+  { id: '1', name: 'WFH', icon: 'home' },
+  { id: '2', name: 'Internship', icon: 'graduation-cap' },
+  { id: '3', name: 'Drive', icon: 'car' },
+  { id: '4', name: 'Batches', icon: 'users' },
+  { id: '5', name: 'Openings', icon: 'briefcase' },
 ];
 
 const HomeScreen = ({ navigation }) => {
@@ -22,45 +22,26 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const renderCategoryCard = (category) => (
-    <TouchableOpacity
-      key={category.id}
-      style={[
-        styles.categoryCard,
-        { backgroundColor: category.color }
-      ]}
-      onPress={() => handleCategoryPress(category.name)}
-    >
-      <View style={styles.cardContent}>
-        <View style={styles.iconContainer}>
-          <FontAwesome 
-            name={category.icon} 
-            size={32} 
-            color="#fff"
-          />
-        </View>
-        <View style={styles.categoryInfo}>
+    <View key={category.id} style={styles.categoryCard}>
+      <TouchableOpacity
+        style={styles.cardInner}
+        onPress={() => handleCategoryPress(category.name)}
+      >
+        <View style={styles.cardContent}>
+          <FontAwesome name={category.icon} size={32} color="#666" />
           <Text style={styles.categoryName}>{category.name}</Text>
-          <Text style={styles.categoryDescription}>
-            View all {category.name.toLowerCase()} opportunities
-          </Text>
         </View>
-        <FontAwesome 
-          name="chevron-right" 
-          size={24} 
-          color="#fff"
-          style={styles.arrowIcon}
-        />
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </View>
   );
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Job Categories</Text>
-      </View>
+     
       <View style={styles.categoriesContainer}>
-        {CATEGORIES.map(category => renderCategoryCard(category))}
+        <View style={styles.gridContainer}>
+          {CATEGORIES.map(category => renderCategoryCard(category))}
+        </View>
       </View>
     </ScrollView>
   );
@@ -83,49 +64,47 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   categoriesContainer: {
-    padding: 16,
+    padding: 12,
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginHorizontal: -6,
   },
   categoryCard: {
-    marginBottom: 16,
+    width: '33.33%',
+    aspectRatio: 1,
+    padding: 6,
+  },
+  cardInner: {
+    flex: 1,
     borderRadius: 12,
-    elevation: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    elevation: 2,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+    padding: 8,
   },
   cardContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 20,
-  },
-  iconContainer: {
-    width: 60,
-    height: 60,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 30,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  categoryInfo: {
-    flex: 1,
-    marginLeft: 16,
-  },
   categoryName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 4,
-  },
-  categoryDescription: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
-  },
-  arrowIcon: {
-    marginLeft: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginTop: 12,
+    textAlign: 'center',
   },
 });
 
