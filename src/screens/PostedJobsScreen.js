@@ -90,27 +90,24 @@ const PostedJobsScreen = ({ navigation, route }) => {
           <View style={styles.socialIcons}>
             <View style={styles.socialIconsGroup}>
               <TouchableOpacity style={styles.iconContainer}>
-                <FontAwesome name="whatsapp" size={20} color="#25D366" />
+                <FontAwesome name="whatsapp" size={styles.iconSize.fontSize} color="#25D366" />
               </TouchableOpacity>
               <TouchableOpacity style={styles.iconContainer}>
-                <FontAwesome name="facebook" size={20} color="#4267B2" />
+                <FontAwesome name="facebook" size={styles.iconSize.fontSize} color="#4267B2" />
               </TouchableOpacity>
               <TouchableOpacity style={styles.iconContainer}>
-                <FontAwesome name="twitter" size={20} color="#1DA1F2" />
+                <FontAwesome name="linkedin" size={styles.iconSize.fontSize} color="#0077B5" />
               </TouchableOpacity>
               <TouchableOpacity style={styles.iconContainer}>
-                <FontAwesome name="linkedin" size={20} color="#0077B5" />
+                <FontAwesome name="telegram" size={styles.iconSize.fontSize} color="#0088cc" />
               </TouchableOpacity>
               <TouchableOpacity style={styles.iconContainer}>
-                <FontAwesome name="telegram" size={20} color="#0088cc" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconContainer}>
-                <FontAwesome name="instagram" size={20} color="#E1306C" />
+                <FontAwesome name="instagram" size={styles.iconSize.fontSize} color="#E1306C" />
               </TouchableOpacity>
             </View>
             
             <TouchableOpacity style={styles.copyButton}>
-              <FontAwesome name="copy" size={16} color="#666" style={styles.copyIcon} />
+              <FontAwesome name="copy" size={26} color="#666" style={styles.copyIcon} />
               <Text style={styles.copyButtonText}>Copy</Text>
             </TouchableOpacity>
           </View>
@@ -130,7 +127,7 @@ const PostedJobsScreen = ({ navigation, route }) => {
         style={styles.fab}
         onPress={() => navigation.navigate('CreateJob')}
       >
-        <FontAwesome name="plus" size={16} color="#fff" />
+        <FontAwesome name="plus" size={6} color="#fff" />
       </TouchableOpacity>
     </View>
   );
@@ -139,20 +136,20 @@ const PostedJobsScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5', // Light gray background
+    backgroundColor: "#f5f5f5", // Light gray background
     padding: 10,
   },
   cardContainer: {
     marginBottom: 10,
     borderRadius: 10,
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 15,
   },
@@ -160,9 +157,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   mainContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 15,
   },
   titleSection: {
@@ -171,76 +168,78 @@ const styles = StyleSheet.create({
   },
   jobTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 4,
   },
   jobPosition: {
     fontSize: 16,
-    color: '#666',
+    color: "#666",
     marginBottom: 2,
   },
   packageSection: {
-    backgroundColor: '#f0f0f0',
+
     padding: 8,
     borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   packageText: {
     fontSize: 14,
-    fontWeight: '500',
-    color: '#666',
+    fontWeight: "500",
+    color: "#666",
   },
   socialIcons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  iconSize: {
+    fontSize: 26, // You can adjust this value to change all icon sizes at once
   },
   socialIconsGroup: {
-    flexDirection: 'row',
-    gap: 8,
+    flexDirection: "row",
+    gap: 10,
   },
   iconContainer: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
     padding: 8,
     borderRadius: 5,
-    width: 36,
-    height: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: 60,
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
   },
   copyButton: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
     padding: 8,
     paddingHorizontal: 16,
     borderRadius: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+
+    height: 50,
   },
   copyIcon: {
     marginRight: 6,
   },
   copyButtonText: {
     fontSize: 14,
-    color: '#666',
-    fontWeight: '500',
+    color: "#666",
+    fontWeight: "500",
   },
   fab: {
-    position: 'absolute',
+    position: "absolute",
     right: 20,
     bottom: 20,
-    width: 56,
+    width: 50,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#4CAF50', // Green color
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#4CAF50", // Green color
+    justifyContent: "center",
+    alignItems: "center",
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
