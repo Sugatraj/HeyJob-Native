@@ -15,7 +15,7 @@ const JobCard = ({ job, onPress }) => {
           url = `whatsapp://send?text=${encodeURIComponent(shareMessage)}`;
           break;
         case 'facebook':
-          url = `fb://share?text=${encodeURIComponent(shareMessage)}`;
+          url = `fb://feed?text=${encodeURIComponent(shareMessage)}`;
           break;
         case 'linkedin':
           url = `linkedin://sharing/share-offsite?subject=${encodeURIComponent(job.jobTitle)}&summary=${encodeURIComponent(shareMessage)}`;
@@ -39,7 +39,7 @@ const JobCard = ({ job, onPress }) => {
             await Linking.openURL(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`);
             break;
           case 'facebook':
-            await Linking.openURL(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareMessage)}`);
+            await Linking.openURL(`https://www.facebook.com/dialog/feed?app_id=YOUR_APP_ID&link=&description=${encodeURIComponent(shareMessage)}&redirect_uri=fbconnect://success`);
             break;
           case 'linkedin':
             await Linking.openURL(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareMessage)}`);
