@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity, Text, Image, Alert } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
 const PostedJobsScreen = ({ navigation, route }) => {
   const [jobs, setJobs] = useState([
@@ -69,36 +70,37 @@ const PostedJobsScreen = ({ navigation, route }) => {
 
   const renderJobItem = ({ item }) => (
     <View style={styles.cardContainer}>
-      <TouchableOpacity 
-        style={styles.card}
-        onPress={() => navigation.navigate('JobDetails', { job: item })}
-      >
-        <View style={styles.jobContent}>
-          {item.image && (
-            <Image source={{ uri: item.image }} style={styles.jobImage} />
-          )}
+      <View style={styles.card}>
+        <TouchableOpacity 
+          style={styles.jobContent}
+          onPress={() => navigation.navigate('JobDetails', { job: item })}
+          activeOpacity={0.6}
+        >
+         
           <View style={styles.jobInfo}>
             <Text style={styles.jobTitle}>{item.jobTitle}</Text>
             <Text style={styles.jobPosition}>{item.jobPosition}</Text>
             <Text style={styles.category}>{item.category}</Text>
           </View>
-        </View>
-        
-        {/* <View style={styles.actionButtons}>
+        </TouchableOpacity>
+{/*         
+        <View style={styles.actionButtons}>
           <TouchableOpacity 
             onPress={() => navigation.navigate('UpdateJob', { job: item })}
             style={styles.editButton}
+            activeOpacity={0.7}
           >
             <Text style={styles.buttonText}>Edit</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             onPress={() => handleDeleteJob(item.id)}
             style={styles.deleteButton}
+            activeOpacity={0.7}
           >
             <Text style={styles.buttonText}>Delete</Text>
           </TouchableOpacity>
         </View> */}
-      </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -113,7 +115,7 @@ const PostedJobsScreen = ({ navigation, route }) => {
         style={styles.fab}
         onPress={() => navigation.navigate('CreateJob')}
       >
-        <Text style={styles.fabText}>+</Text>
+        <FontAwesome name="plus" size={16} color="#fff" />
       </TouchableOpacity>
     </View>
   );
@@ -195,7 +197,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#fff',
+    backgroundColor: '#4CAF50', // Green color
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,
@@ -203,10 +205,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-  },
-  fabText: {
-    fontSize: 24,
-    color: '#',
   },
 });
 
