@@ -68,36 +68,38 @@ const PostedJobsScreen = ({ navigation, route }) => {
   };
 
   const renderJobItem = ({ item }) => (
-    <TouchableOpacity 
-      style={styles.jobCard}
-      onPress={() => navigation.navigate('JobDetails', { job: item })}
-    >
-      <View style={styles.jobContent}>
-        {item.image && (
-          <Image source={{ uri: item.image }} style={styles.jobImage} />
-        )}
-        <View style={styles.jobInfo}>
-          <Text style={styles.jobTitle}>{item.jobTitle}</Text>
-          <Text style={styles.jobPosition}>{item.jobPosition}</Text>
-          <Text style={styles.category}>{item.category}</Text>
+    <View style={styles.cardContainer}>
+      <TouchableOpacity 
+        style={styles.card}
+        onPress={() => navigation.navigate('JobDetails', { job: item })}
+      >
+        <View style={styles.jobContent}>
+          {item.image && (
+            <Image source={{ uri: item.image }} style={styles.jobImage} />
+          )}
+          <View style={styles.jobInfo}>
+            <Text style={styles.jobTitle}>{item.jobTitle}</Text>
+            <Text style={styles.jobPosition}>{item.jobPosition}</Text>
+            <Text style={styles.category}>{item.category}</Text>
+          </View>
         </View>
-      </View>
-      
-      <View style={styles.actionButtons}>
-        <TouchableOpacity 
-          onPress={() => navigation.navigate('UpdateJob', { job: item })}
-          style={styles.editButton}
-        >
-          <Text style={styles.editButtonText}>Edit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          onPress={() => handleDeleteJob(item.id)}
-          style={styles.deleteButton}
-        >
-          <Text style={styles.deleteButtonText}>Delete</Text>
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
+        
+        {/* <View style={styles.actionButtons}>
+          <TouchableOpacity 
+            onPress={() => navigation.navigate('UpdateJob', { job: item })}
+            style={styles.editButton}
+          >
+            <Text style={styles.buttonText}>Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => handleDeleteJob(item.id)}
+            style={styles.deleteButton}
+          >
+            <Text style={styles.buttonText}>Delete</Text>
+          </TouchableOpacity>
+        </View> */}
+      </TouchableOpacity>
+    </View>
   );
 
   return (
@@ -120,12 +122,26 @@ const PostedJobsScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f5f5f5', // Light gray background
+    padding: 10,
   },
-  jobCard: {
-    flexDirection: 'row',
+  cardContainer: {
+    marginBottom: 10,
+    borderRadius: 10,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
     padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+  },
+  jobContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   jobImage: {
     width: 60,
@@ -139,14 +155,38 @@ const styles = StyleSheet.create({
   jobTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    marginBottom: 4,
   },
   jobPosition: {
     fontSize: 16,
     color: '#666',
+    marginBottom: 2,
   },
   category: {
     fontSize: 14,
     color: '#888',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 10,
+  },
+  editButton: {
+    backgroundColor: '#f0f0f0',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+    marginRight: 10,
+  },
+  deleteButton: {
+    backgroundColor: '#f0f0f0',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+  },
+  buttonText: {
+    fontSize: 14,
+    color: '#333',
   },
   fab: {
     position: 'absolute',
@@ -155,42 +195,18 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   fabText: {
     fontSize: 24,
-    color: 'white',
-  },
-  jobContent: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 10,
-  },
-  editButton: {
-    backgroundColor: '#007AFF',
-    padding: 5,
-    borderRadius: 5,
-    marginRight: 10,
-  },
-  deleteButton: {
-    backgroundColor: '#FF3B30',
-    padding: 5,
-    borderRadius: 5,
-  },
-  editButtonText: {
-    color: 'white',
-    fontSize: 12,
-  },
-  deleteButtonText: {
-    color: 'white',
-    fontSize: 12,
+    color: '#',
   },
 });
 

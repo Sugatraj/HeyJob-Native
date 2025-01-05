@@ -10,10 +10,21 @@ import UpdateJobScreen from './src/screens/UpdateJobScreen';
 
 const Stack = createStackNavigator();
 
+const screenOptions = {
+  headerTitleAlign: 'center',
+  headerStyle: {
+    backgroundColor: '#fff',
+  },
+  headerTintColor: '#000',
+  headerTitleStyle: {
+    fontWeight: 'bold',
+  },
+};
+
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={screenOptions}>
         <Stack.Screen 
           name="PostedJobs" 
           component={PostedJobsScreen} 
