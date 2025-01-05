@@ -1,9 +1,71 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Linking, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { formatDate } from '../utils/dateUtils';
+// import * as Clipboard from 'expo-clipboard';
 
 const JobCard = ({ job, onPress }) => {
+  const shareMessage = `Job Opening: ${job.jobTitle}\nPosition: ${job.jobPosition}\nPackage: ${job.package}\nCompany: ${job.companyDetails}\n\n${job.jobDescription}`;
+
+  const handleShare = async (platform) => {
+    try {
+      let url = '';
+      switch (platform) {
+        case 'whatsapp':
+          url = `whatsapp://send?text=${encodeURIComponent(shareMessage)}`;
+          break;
+        case 'facebook':
+          url = `fb://share?text=${encodeURIComponent(shareMessage)}`;
+          break;
+        case 'linkedin':
+          url = `linkedin://sharing/share-offsite?subject=${encodeURIComponent(job.jobTitle)}&summary=${encodeURIComponent(shareMessage)}`;
+          break;
+        case 'telegram':
+          url = `tg://msg?text=${encodeURIComponent(shareMessage)}`;
+          break;
+        case 'instagram':
+          // Instagram doesn't support direct sharing through URL scheme
+          // Opening the app instead
+          url = 'instagram://';
+          break;
+      }
+      const canOpen = await Linking.canOpenURL(url);
+      if (canOpen) {
+        await Linking.openURL(url);
+      } else {
+        // If app is not installed, open in browser
+        switch (platform) {
+          case 'whatsapp':
+            await Linking.openURL(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`);
+            break;
+          case 'facebook':
+            await Linking.openURL(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareMessage)}`);
+            break;
+          case 'linkedin':
+            await Linking.openURL(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareMessage)}`);
+            break;
+          case 'telegram':
+            await Linking.openURL(`https://t.me/share/url?url=${encodeURIComponent(shareMessage)}`);
+            break;
+          case 'instagram':
+            await Linking.openURL('https://www.instagram.com');
+            break;
+        }
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
+  };
+
+  const handleCopy = async () => {
+    try {
+      await Clipboard.setString(shareMessage);
+      // You might want to show a toast message here
+    } catch (error) {
+      console.error('Error copying:', error);
+    }
+  };
+
   return (
     <View style={styles.cardContainer}>
       <View style={styles.card}>
@@ -25,24 +87,24 @@ const JobCard = ({ job, onPress }) => {
 
           <View style={styles.socialIcons}>
             <View style={styles.socialIconsGroup}>
-              <TouchableOpacity style={styles.iconContainer}>
+              <TouchableOpacity style={styles.iconContainer} onPress={() => handleShare('whatsapp')}>
                 <FontAwesome name="whatsapp" size={26} color="#25D366" />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.iconContainer}>
+              <TouchableOpacity style={styles.iconContainer} onPress={() => handleShare('facebook')}>
                 <FontAwesome name="facebook" size={26} color="#4267B2" />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.iconContainer}>
+              <TouchableOpacity style={styles.iconContainer} onPress={() => handleShare('linkedin')}>
                 <FontAwesome name="linkedin" size={26} color="#0077B5" />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.iconContainer}>
+              <TouchableOpacity style={styles.iconContainer} onPress={() => handleShare('telegram')}>
                 <FontAwesome name="telegram" size={26} color="#0088cc" />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.iconContainer}>
+              <TouchableOpacity style={styles.iconContainer} onPress={() => handleShare('instagram')}>
                 <FontAwesome name="instagram" size={26} color="#E1306C" />
               </TouchableOpacity>
             </View>
             
-            <TouchableOpacity style={styles.copyButton}>
+            <TouchableOpacity style={styles.copyButton} onPress={handleCopy}>
               <FontAwesome name="copy" size={26} color="#666" style={styles.copyIcon} />
               <Text style={styles.copyButtonText}>Copy</Text>
             </TouchableOpacity>
