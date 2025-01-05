@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity, TextInput, Text } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome6 } from '@expo/vector-icons';
 import JobCard from '../components/JobCard';
 
 const JOBS_DATA = {
@@ -25,10 +26,20 @@ const JOBS_DATA = {
       companyDetails: 'Support Co Ltd.',
       jobDescription: 'Looking for customer support executive...',
     },
+    {
+      id: '3',
+      jobTitle: 'Data Analyst',
+      jobPosition: 'Senior Analyst',
+      category: 'WFH',
+      date: new Date('2024-03-20'),
+      package: '8 LPA',
+      companyDetails: 'Analytics Corp',
+      jobDescription: 'Senior data analyst position...',
+    },
   ],
   Internship: [
     {
-      id: '3',
+      id: '4',
       jobTitle: 'Software Intern',
       jobPosition: 'Junior Developer',
       category: 'Internship',
@@ -37,10 +48,30 @@ const JOBS_DATA = {
       companyDetails: 'Tech Startup',
       jobDescription: 'Looking for passionate interns...',
     },
+    {
+      id: '5',
+      jobTitle: 'Marketing Intern',
+      jobPosition: 'Digital Marketing',
+      category: 'Internship',
+      date: new Date('2024-03-18'),
+      package: '20K/month',
+      companyDetails: 'Digital Agency',
+      jobDescription: 'Digital marketing internship...',
+    },
+    {
+      id: '6',
+      jobTitle: 'UI/UX Intern',
+      jobPosition: 'Design Intern',
+      category: 'Internship',
+      date: new Date('2024-03-12'),
+      package: '22K/month',
+      companyDetails: 'Design Studio',
+      jobDescription: 'UI/UX design internship...',
+    },
   ],
   Drive: [
     {
-      id: '4',
+      id: '7',
       jobTitle: 'Campus Drive',
       jobPosition: 'Multiple Positions',
       category: 'Drive',
@@ -49,10 +80,30 @@ const JOBS_DATA = {
       companyDetails: 'Major Corp',
       jobDescription: 'Campus recruitment drive...',
     },
+    {
+      id: '8',
+      jobTitle: 'Tech Drive',
+      jobPosition: 'Software Engineers',
+      category: 'Drive',
+      date: new Date('2024-03-25'),
+      package: '6-10 LPA',
+      companyDetails: 'Tech Giants',
+      jobDescription: 'Technical recruitment drive...',
+    },
+    {
+      id: '9',
+      jobTitle: 'Fresher Drive',
+      jobPosition: 'Graduate Engineers',
+      category: 'Drive',
+      date: new Date('2024-03-10'),
+      package: '4-6 LPA',
+      companyDetails: 'IT Solutions',
+      jobDescription: 'Fresher recruitment drive...',
+    },
   ],
   Batches: [
     {
-      id: '5',
+      id: '10',
       jobTitle: 'MERN Stack',
       jobPosition: 'Training Program',
       category: 'Batches',
@@ -61,10 +112,30 @@ const JOBS_DATA = {
       companyDetails: 'Tech Academy',
       jobDescription: 'Complete MERN stack training...',
     },
+    {
+      id: '11',
+      jobTitle: 'Data Science',
+      jobPosition: 'Certification Course',
+      category: 'Batches',
+      date: new Date('2024-03-22'),
+      package: '45K',
+      companyDetails: 'Data Institute',
+      jobDescription: 'Data science certification...',
+    },
+    {
+      id: '12',
+      jobTitle: 'Cloud Computing',
+      jobPosition: 'AWS Training',
+      category: 'Batches',
+      date: new Date('2024-03-08'),
+      package: '35K',
+      companyDetails: 'Cloud Academy',
+      jobDescription: 'AWS certification training...',
+    },
   ],
   Openings: [
     {
-      id: '6',
+      id: '13',
       jobTitle: 'Senior Developer',
       jobPosition: 'Full Stack',
       category: 'Openings',
@@ -73,6 +144,26 @@ const JOBS_DATA = {
       companyDetails: 'Enterprise Solutions',
       jobDescription: 'Looking for senior full stack developer...',
     },
+    {
+      id: '14',
+      jobTitle: 'Product Manager',
+      jobPosition: 'Technical PM',
+      category: 'Openings',
+      date: new Date('2024-03-19'),
+      package: '18 LPA',
+      companyDetails: 'Product Co',
+      jobDescription: 'Technical product manager role...',
+    },
+    {
+      id: '15',
+      jobTitle: 'DevOps Engineer',
+      jobPosition: 'Senior DevOps',
+      category: 'Openings',
+      date: new Date('2024-03-11'),
+      package: '20 LPA',
+      companyDetails: 'Cloud Corp',
+      jobDescription: 'Senior DevOps engineer position...',
+    },
   ],
 };
 
@@ -80,6 +171,7 @@ const CategoryJobsScreen = ({ navigation, route }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const { category } = route.params;
   const [jobs, setJobs] = useState(JOBS_DATA[category] || []);
+  const [sortAscending, setSortAscending] = useState(false);
 
   // Add new job
   React.useEffect(() => {
@@ -105,7 +197,12 @@ const CategoryJobsScreen = ({ navigation, route }) => {
   }, [route.params?.updatedJob]);
 
   const handleSort = () => {
-    setJobs([...jobs].sort((a, b) => new Date(b.date) - new Date(a.date)));
+    setSortAscending(!sortAscending);
+    setJobs([...jobs].sort((a, b) => {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return sortAscending ? dateA - dateB : dateB - dateA;
+    }));
   };
 
   const filteredJobs = jobs.filter(job => 
@@ -133,7 +230,11 @@ const CategoryJobsScreen = ({ navigation, route }) => {
           />
         </View>
         <TouchableOpacity style={styles.sortButton} onPress={handleSort}>
-          <FontAwesome name="sort" size={24} color="#666" />
+          <FontAwesome6 
+            name={sortAscending ? "arrow-up-wide-short" : "arrow-down-wide-short"} 
+            size={24} 
+            color="#666" 
+          />
         </TouchableOpacity>
       </View>
 
