@@ -6,10 +6,13 @@ const UpdateJobScreen = ({ route, navigation }) => {
   const { job } = route.params;
 
   const handleSubmit = (formData) => {
-    // Here you would typically update the data in your backend
-    console.log('Updated Job Data:', formData);
-    // Navigate back to the job details
-    navigation.goBack();
+    // Navigate back with the updated job data
+    navigation.navigate('PostedJobs', { 
+      updatedJob: {
+        ...formData,
+        id: job.id // Important: Keep the original job ID
+      }
+    });
   };
 
   return (
