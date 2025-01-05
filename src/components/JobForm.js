@@ -50,7 +50,7 @@ const JobForm = ({ initialValues = {}, onSubmit, submitButtonText = 'Submit' }) 
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.requiredField}>* Required fields</Text>
+     
       
       <Text style={styles.label}>Job Title *</Text>
       <TextInput
@@ -122,6 +122,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     borderRadius: 5,
     backgroundColor: '#fff',
+    paddingVertical: 18,
   },
   multilineInput: {
     height: 100,

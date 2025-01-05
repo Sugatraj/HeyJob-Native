@@ -126,7 +126,7 @@ const PostedJobsScreen = ({ navigation, route }) => {
         style={styles.fab}
         onPress={() => navigation.navigate('CreateJob')}
       >
-        <FontAwesome name="plus" size={6} color="#fff" />
+        <FontAwesome name="plus" size={24} color="#fff" />
       </TouchableOpacity>
     </View>
   );
@@ -229,12 +229,12 @@ const styles = StyleSheet.create({
   },
   fab: {
     position: "absolute",
-    right: 20,
-    bottom: 20,
-    width: 50,
-    height: 56,
+    right: 25,
+    bottom: 25,
+    width: 60,
+    height: 60,
     borderRadius: 28,
-    backgroundColor: "#4CAF50", // Green color
+    backgroundColor: "#4CAF50",
     justifyContent: "center",
     alignItems: "center",
     elevation: 4,
