@@ -79,11 +79,10 @@ const PostedJobsScreen = ({ navigation, route }) => {
           <View style={styles.mainContent}>
             <View style={styles.titleSection}>
               <Text style={styles.jobTitle}>{item.jobTitle}</Text>
-              <Text style={styles.jobPosition}>{item.jobPosition}</Text>
-            </View>
-            
-            <View style={styles.packageSection}>
-              <Text style={styles.packageText}>3.5 LPA</Text>
+              <View style={styles.positionRow}>
+                <Text style={styles.jobPosition}>{item.jobPosition}</Text>
+                <Text style={styles.packageText}>3.5 LPA</Text>
+              </View>
             </View>
           </View>
 
@@ -171,17 +170,17 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 4,
   },
+  positionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    paddingRight: 1,
+    flex: 1,
+  },
   jobPosition: {
     fontSize: 16,
     color: "#666",
-    marginBottom: 2,
-  },
-  packageSection: {
-
-    padding: 8,
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
   },
   packageText: {
     fontSize: 14,
