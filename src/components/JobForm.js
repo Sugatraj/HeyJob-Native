@@ -101,7 +101,15 @@ const JobForm = ({ initialValues = {}, onSubmit, submitButtonText = 'Submit' }) 
 
       <Text style={styles.label}>Image</Text>
       {jobData.image ? (
-        <Image source={{ uri: jobData.image }} style={styles.imagePreview} />
+        <View style={styles.imageContainer}>
+          <Image source={{ uri: jobData.image }} style={styles.imagePreview} />
+          <TouchableOpacity 
+            style={styles.removeImageButton}
+            onPress={() => setJobData({ ...jobData, image: '' })}
+          >
+            <Text style={styles.removeImageText}>×</Text>
+          </TouchableOpacity>
+        </View>
       ) : null}
       <TouchableOpacity style={styles.imageButton} onPress={pickImage}>
         <Text style={styles.imageButtonText}>
@@ -156,10 +164,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 14,
   },
+  imageContainer: {
+    position: 'relative',
+    marginBottom: 10,
+  },
   imagePreview: {
     width: '100%',
     height: 200,
-    marginBottom: 10,
     borderRadius: 5,
   },
   imageButton: {
@@ -178,6 +189,23 @@ const styles = StyleSheet.create({
   required: {
     color: '#FF0000',
     fontSize: 16,
+  },
+  removeImageButton: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  removeImageText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
+    lineHeight: 20,
   },
 });
 

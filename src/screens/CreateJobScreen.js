@@ -11,7 +11,7 @@ const CreateJobScreen = ({ navigation }) => {
     <View style={{ flex: 1 }}>
       <JobForm 
         onSubmit={handleSubmit}
-        submitButtonText="Post Job"
+        submitButtonText="Post New Job"
       />
     </View>
   );
