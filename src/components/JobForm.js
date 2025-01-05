@@ -1,17 +1,26 @@
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Text, ScrollView, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { Picker } from '@react-native-picker/picker';
+
+const CATEGORY_OPTIONS = [
+  { label: 'WFH', value: 'WFH' },
+  { label: 'Internship', value: 'Internship' },
+  { label: 'Drive', value: 'Drive' },
+  { label: 'Batches', value: 'Batches' },
+  { label: 'Openings', value: 'Openings' },
+];
 
 const JobForm = ({ initialValues = {}, onSubmit, submitButtonText = 'Submit' }) => {
   const [jobData, setJobData] = useState({
-    jobTitle: '',
-    jobPosition: '',
-    category: '',
-    companyDetails: '',
-    jobDescription: '',
-    image: '',
-    packageUrl: '',
-    ...initialValues
+    jobTitle: "",
+    jobPosition: "",
+    category: "Openings",
+    companyDetails: "",
+    jobDescription: "",
+    image: "",
+    packageUrl: "",
+    ...initialValues,
   });
 
   const pickImage = async () => {
@@ -75,12 +84,22 @@ const JobForm = ({ initialValues = {}, onSubmit, submitButtonText = 'Submit' }) 
       />
       
       <Text style={styles.label}>Category</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Category"
-        value={jobData.category}
-        onChangeText={(text) => setJobData({ ...jobData, category: text })}
-      />
+      <View style={styles.pickerContainer}>
+        <Picker
+          style={styles.picker}
+          selectedValue={jobData.category}
+          onValueChange={(value) => setJobData({ ...jobData, category: value })}
+        >
+          <Picker.Item label="Select Category" value="" enabled={false} />
+          {CATEGORY_OPTIONS.map((option) => (
+            <Picker.Item 
+              key={option.value} 
+              label={option.label} 
+              value={option.value}
+            />
+          ))}
+        </Picker>
+      </View>
       
       <Text style={styles.label}>Company Details</Text>
       <TextInput
@@ -206,6 +225,17 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     lineHeight: 20,
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+    backgroundColor: '#fff',
+    marginBottom: 15,
+  },
+  picker: {
+    height: 50,
+    width: '100%',
   },
 });
 
