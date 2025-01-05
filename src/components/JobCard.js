@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { formatDate } from '../utils/dateUtils';
 
 const JobCard = ({ job, onPress }) => {
   return (
@@ -18,7 +19,7 @@ const JobCard = ({ job, onPress }) => {
                 <Text style={styles.jobPosition}>{job.jobPosition}</Text>
                 <Text style={styles.packageText}>{job.package}</Text>
               </View>
-              <Text style={styles.dateText}>{job.date}</Text>
+              <Text style={styles.dateText}>{formatDate(job.date)}</Text>
             </View>
           </View>
 

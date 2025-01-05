@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity, Text, Image, Alert, TextInput } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import JobCard from '../components/JobCard';
 
 const PostedJobsScreen = ({ navigation, route }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -10,7 +11,8 @@ const PostedJobsScreen = ({ navigation, route }) => {
       jobTitle: 'Software Developer',
       jobPosition: 'Senior Developer',
       category: 'Technology',
-      image: 'https://picsum.photos/200', // placeholder image
+      date: new Date(),
+      package: '₹5-8 LPA',
       companyDetails: 'Tech Corp Inc.',
       jobDescription: 'Looking for an experienced developer...',
       packageUrl: 'https://example.com/job/1'
@@ -20,18 +22,20 @@ const PostedJobsScreen = ({ navigation, route }) => {
       jobTitle: 'UI Designer',
       jobPosition: 'Mid-level Designer',
       category: 'Design',
-      image: 'https://picsum.photos/201', // placeholder image
+      date: new Date(),
+      package: '₹4-6 LPA',
       companyDetails: 'Design Studio Ltd.',
       jobDescription: 'Seeking creative UI designer...',
       packageUrl: 'https://example.com/job/2'
     },
-  ]); // Replace with API call later
+  ]);
 
   // Add new job
   React.useEffect(() => {
     if (route.params?.newJob) {
       setJobs(currentJobs => [...currentJobs, {
-        id: String(Date.now()), // Simple way to generate unique ID
+        id: String(Date.now()),
+        date: new Date(),
         ...route.params.newJob
       }]);
     }
@@ -42,13 +46,12 @@ const PostedJobsScreen = ({ navigation, route }) => {
     if (route.params?.updatedJob) {
       setJobs(currentJobs =>
         currentJobs.map(job =>
-          job.id === route.params.updatedJob.id ? route.params.updatedJob : job
+          job.id === route.params.updatedJob.id ? { ...route.params.updatedJob, date: new Date() } : job
         )
       );
     }
   }, [route.params?.updatedJob]);
 
-  // Delete job
   const handleDeleteJob = (jobId) => {
     Alert.alert(
       "Delete Job",
@@ -69,59 +72,20 @@ const PostedJobsScreen = ({ navigation, route }) => {
     );
   };
 
+  const handleSort = () => {
+    setJobs([...jobs].sort((a, b) => new Date(b.date) - new Date(a.date)));
+  };
+
   const filteredJobs = jobs.filter(job => 
     job.jobTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
     job.jobPosition.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const renderJobItem = ({ item }) => (
-    <View style={styles.cardContainer}>
-      <View style={styles.card}>
-        <TouchableOpacity 
-          style={styles.jobContent}
-          onPress={() => navigation.navigate('JobDetails', { job: item })}
-          activeOpacity={0.6}
-        >
-          <View style={styles.mainContent}>
-            <View style={styles.titleSection}>
-              <Text style={styles.jobTitle}>{item.jobTitle}</Text>
-              <View style={styles.positionRow}>
-                <Text style={styles.jobPosition}>{item.jobPosition}</Text>
-                <Text style={styles.packageText}>3.5 LPA</Text>
-              </View>
-              <Text style={styles.dateText}>{new Date().toLocaleDateString()}</Text>
-            </View>
-          </View>
-
-          
-
-          <View style={styles.socialIcons}>
-            <View style={styles.socialIconsGroup}>
-              <TouchableOpacity style={styles.iconContainer}>
-                <FontAwesome name="whatsapp" size={styles.iconSize.fontSize} color="#25D366" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconContainer}>
-                <FontAwesome name="facebook" size={styles.iconSize.fontSize} color="#4267B2" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconContainer}>
-                <FontAwesome name="linkedin" size={styles.iconSize.fontSize} color="#0077B5" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconContainer}>
-                <FontAwesome name="telegram" size={styles.iconSize.fontSize} color="#0088cc" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconContainer}>
-                <FontAwesome name="instagram" size={styles.iconSize.fontSize} color="#E1306C" />
-              </TouchableOpacity>
-            </View>
-            
-            <TouchableOpacity style={styles.copyButton}>
-              <FontAwesome name="copy" size={26} color="#666" style={styles.copyIcon} />
-              <Text style={styles.copyButtonText}>Copy</Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      </View>
-    </View>
+    <JobCard 
+      job={item}
+      onPress={() => navigation.navigate('JobDetails', { job: item })}
+    />
   );
 
   return (
@@ -136,7 +100,7 @@ const PostedJobsScreen = ({ navigation, route }) => {
             onChangeText={setSearchQuery}
           />
         </View>
-        <TouchableOpacity style={styles.sortButton}>
+        <TouchableOpacity style={styles.sortButton} onPress={handleSort}>
           <FontAwesome name="sort" size={24} color="#666" />
         </TouchableOpacity>
       </View>
@@ -159,97 +123,37 @@ const PostedJobsScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5", // Light gray background
+    backgroundColor: "#f5f5f5",
+  },
+  searchContainer: {
+    flexDirection: "row",
     padding: 10,
-  },
-  cardContainer: {
-    marginBottom: 10,
-    borderRadius: 10,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-  card: {
     backgroundColor: "#fff",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  searchInputContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#e0e0e0",
     borderRadius: 10,
-    padding: 15,
-  },
-  jobContent: {
-    flex: 1,
-  },
-  mainContent: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 15,
-  },
-  titleSection: {
-    flex: 1,
     marginRight: 10,
+    paddingHorizontal: 10,
   },
-  jobTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 4,
+  searchIcon: {
+    marginRight: 8,
   },
-  positionRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-    paddingRight: 1,
+  searchInput: {
     flex: 1,
-  },
-  jobPosition: {
+    height: 40,
     fontSize: 16,
-    color: "#666",
   },
-  packageText: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#666",
-  },
-  socialIcons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  iconSize: {
-    fontSize: 26, // You can adjust this value to change all icon sizes at once
-  },
-  socialIconsGroup: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  iconContainer: {
-    backgroundColor: "#f0f0f0",
+  sortButton: {
     padding: 8,
-    borderRadius: 5,
-    width: 60,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  copyButton: {
-    backgroundColor: "#f0f0f0",
-    padding: 8,
-    paddingHorizontal: 16,
-    borderRadius: 5,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-
-    height: 50,
-  },
-  copyIcon: {
-    marginRight: 6,
-  },
-  copyButtonText: {
-    fontSize: 14,
-    color: "#666",
-    fontWeight: "500",
+    borderRadius: 8,
+    backgroundColor: "#e0e0e0",
   },
   fab: {
     position: "absolute",
@@ -266,42 +170,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-  },
-  searchContainer: {
-    flexDirection: "row",
-    padding: 10,
-    backgroundColor: "transparent",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-  },
-  searchInputContainer: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#e0e0e0",
-    borderRadius: 8,
-    marginRight: 10,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-  },
-  searchIcon: {
-    marginRight: 8,
-  },
-  searchInput: {
-    flex: 1,
-    height: 40,
-    fontSize: 16,
-  },
-  sortButton: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: "#e0e0e0",
-  },
-  dateText: {
-    fontSize: 16,
-    color: '#666',
-    marginTop: 4,
   },
 });
 

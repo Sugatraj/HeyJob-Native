@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { getCurrentDate } from '../utils/dateUtils';
 
 const CATEGORIES = [
   { id: '1', name: 'WFH', icon: 'home' },
@@ -37,7 +38,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
-     
+      
       <View style={styles.categoriesContainer}>
         <View style={styles.gridContainer}>
           {CATEGORIES.map(category => renderCategoryCard(category))}
@@ -62,6 +63,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
+    marginBottom: 4,
+  },
+  dateText: {
+    fontSize: 14,
+    color: '#666',
   },
   categoriesContainer: {
     padding: 12,
