@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity, Text, Image, Alert } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity, Text, Image, Alert, TextInput } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
 const PostedJobsScreen = ({ navigation, route }) => {
+  const [searchQuery, setSearchQuery] = useState('');
   const [jobs, setJobs] = useState([
     {
       id: '1',
@@ -68,6 +69,11 @@ const PostedJobsScreen = ({ navigation, route }) => {
     );
   };
 
+  const filteredJobs = jobs.filter(job => 
+    job.jobTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    job.jobPosition.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const renderJobItem = ({ item }) => (
     <View style={styles.cardContainer}>
       <View style={styles.card}>
@@ -83,8 +89,11 @@ const PostedJobsScreen = ({ navigation, route }) => {
                 <Text style={styles.jobPosition}>{item.jobPosition}</Text>
                 <Text style={styles.packageText}>3.5 LPA</Text>
               </View>
+              <Text style={styles.dateText}>{new Date().toLocaleDateString()}</Text>
             </View>
           </View>
+
+          
 
           <View style={styles.socialIcons}>
             <View style={styles.socialIconsGroup}>
@@ -117,8 +126,23 @@ const PostedJobsScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.searchContainer}>
+        <View style={styles.searchInputContainer}>
+          <FontAwesome name="search" size={20} color="#666" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search jobs..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
+        <TouchableOpacity style={styles.sortButton}>
+          <FontAwesome name="sort" size={24} color="#666" />
+        </TouchableOpacity>
+      </View>
+
       <FlatList
-        data={jobs}
+        data={filteredJobs}
         renderItem={renderJobItem}
         keyExtractor={(item) => item.id}
       />
@@ -171,10 +195,10 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   positionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
     paddingRight: 1,
     flex: 1,
   },
@@ -242,6 +266,42 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+  },
+  searchContainer: {
+    flexDirection: "row",
+    padding: 10,
+    backgroundColor: "transparent",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  searchInputContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#e0e0e0",
+    borderRadius: 8,
+    marginRight: 10,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    fontSize: 16,
+  },
+  sortButton: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: "#e0e0e0",
+  },
+  dateText: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 4,
   },
 });
 
