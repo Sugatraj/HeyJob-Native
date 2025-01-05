@@ -52,7 +52,10 @@ const JobForm = ({ initialValues = {}, onSubmit, submitButtonText = 'Submit' }) 
     <ScrollView style={styles.container}>
      
       
-      <Text style={styles.label}>Job Title *</Text>
+      <Text style={styles.label}>
+        <Text style={styles.required}>* </Text>
+        Job Title
+      </Text>
       <TextInput
         style={styles.input}
         placeholder="Enter Job Title"
@@ -60,7 +63,10 @@ const JobForm = ({ initialValues = {}, onSubmit, submitButtonText = 'Submit' }) 
         onChangeText={(text) => setJobData({ ...jobData, jobTitle: text })}
       />
       
-      <Text style={styles.label}>Job Position *</Text>
+      <Text style={styles.label}>
+        <Text style={styles.required}>* </Text>
+        Job Position
+      </Text>
       <TextInput
         style={styles.input}
         placeholder="Enter Job Position"
@@ -93,7 +99,7 @@ const JobForm = ({ initialValues = {}, onSubmit, submitButtonText = 'Submit' }) 
         multiline
       />
 
-      <Text style={styles.label}>Image (Optional)</Text>
+      <Text style={styles.label}>Image</Text>
       {jobData.image ? (
         <Image source={{ uri: jobData.image }} style={styles.imagePreview} />
       ) : null}
@@ -157,14 +163,20 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   imageButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: 'transparent',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
     marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#007AFF',
   },
   imageButtonText: {
-    color: 'white',
+    color: '#007AFF',
+    fontSize: 16,
+  },
+  required: {
+    color: '#FF0000',
     fontSize: 16,
   },
 });
