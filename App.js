@@ -2,33 +2,41 @@ import 'react-native-gesture-handler';
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-
-import PostedJobsScreen from './src/screens/PostedJobsScreen';
+import HomeScreen from './src/screens/HomeScreen';
 import CreateJobScreen from './src/screens/CreateJobScreen';
 import JobDetailsScreen from './src/screens/JobDetailsScreen';
 import UpdateJobScreen from './src/screens/UpdateJobScreen';
+import CategoryJobsScreen from './src/screens/CategoryJobsScreen';
 
 const Stack = createStackNavigator();
-
-const screenOptions = {
-  headerTitleAlign: 'center',
-  headerStyle: {
-    backgroundColor: '#fff',
-  },
-  headerTintColor: '#000',
-  headerTitleStyle: {
-    fontWeight: 'bold',
-  },
-};
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={screenOptions}>
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerTitleAlign: 'center',
+          headerStyle: {
+            backgroundColor: '#fff',
+          },
+          headerTintColor: '#000',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      >
         <Stack.Screen 
-          name="PostedJobs" 
-          component={PostedJobsScreen} 
-          options={{ title: 'Posted Jobs' }}
+          name="Home" 
+          component={HomeScreen} 
+          options={{ title: 'Hey Job' }}
+        />
+        <Stack.Screen 
+          name="CategoryJobs" 
+          component={CategoryJobsScreen}
+          options={({ route }) => ({ 
+            title: route.params.title 
+          })}
         />
         <Stack.Screen 
           name="CreateJob" 

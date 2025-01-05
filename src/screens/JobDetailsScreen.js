@@ -34,7 +34,7 @@ const JobDetailsScreen = ({ route, navigation }) => {
         
         <TouchableOpacity 
           style={[styles.button, styles.editButton]}
-          onPress={() => navigation.navigate('UpdateJob', { job })}
+          onPress={() => navigation.navigate('CreateJob', { job, category: job.category })}
         >
           <Text style={styles.buttonText}>Edit Job</Text>
         </TouchableOpacity>

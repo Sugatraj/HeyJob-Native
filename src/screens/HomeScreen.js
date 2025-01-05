@@ -28,6 +28,14 @@ const HomeScreen = ({ navigation }) => {
 
   const filteredJobs = jobs.filter(job => job.category === selectedCategory);
 
+  const handleCategoryPress = (categoryName) => {
+    setSelectedCategory(categoryName);
+    navigation.navigate('CategoryJobs', {
+      category: categoryName,
+      title: categoryName
+    });
+  };
+
   const renderJobItem = ({ item }) => (
     <View style={styles.cardContainer}>
       <View style={styles.card}>
@@ -76,44 +84,37 @@ const HomeScreen = ({ navigation }) => {
     </View>
   );
 
+  const renderCategories = () => (
+    <View style={styles.categoriesGrid}>
+      {CATEGORIES.map((category) => (
+        <TouchableOpacity
+          key={category.id}
+          style={[
+            styles.categoryTab,
+            selectedCategory === category.name && styles.selectedCategoryTab
+          ]}
+          onPress={() => handleCategoryPress(category.name)}
+        >
+          <FontAwesome 
+            name={category.icon} 
+            size={24} 
+            color={selectedCategory === category.name ? '#fff' : '#666'} 
+          />
+          <Text style={[
+            styles.categoryText,
+            selectedCategory === category.name && styles.selectedCategoryText
+          ]}>
+            {category.name}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      <ScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false}
-        style={styles.categoriesContainer}
-      >
-        {CATEGORIES.map((category) => (
-          <TouchableOpacity
-            key={category.id}
-            style={[
-              styles.categoryTab,
-              selectedCategory === category.name && styles.selectedCategoryTab
-            ]}
-            onPress={() => setSelectedCategory(category.name)}
-          >
-            <FontAwesome 
-              name={category.icon} 
-              size={20} 
-              color={selectedCategory === category.name ? '#fff' : '#666'} 
-            />
-            <Text style={[
-              styles.categoryText,
-              selectedCategory === category.name && styles.selectedCategoryText
-            ]}>
-              {category.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      <FlatList
-        data={filteredJobs}
-        renderItem={renderJobItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.jobsList}
-      />
-
+      {renderCategories()}
+     
       <TouchableOpacity 
         style={styles.fab}
         onPress={() => navigation.navigate('CreateJob', { category: selectedCategory })}
@@ -129,26 +130,37 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
-  categoriesContainer: {
+  categoriesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    padding: 10,
     backgroundColor: '#fff',
-    paddingVertical: 10,
-    paddingHorizontal: 5,
+    justifyContent: 'space-between',
   },
   categoryTab: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginHorizontal: 5,
-    borderRadius: 20,
+    justifyContent: 'center',
+    width: '48%', // slightly less than 50% to account for spacing
+    marginBottom: 10,
+    padding: 15,
+    borderRadius: 8,
     backgroundColor: '#f0f0f0',
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
   },
   selectedCategoryTab: {
     backgroundColor: '#4CAF50',
   },
   categoryText: {
     marginLeft: 8,
-    fontSize: 14,
+    fontSize: 16,
     color: '#666',
     fontWeight: '500',
   },
