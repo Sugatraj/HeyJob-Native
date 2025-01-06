@@ -94,14 +94,12 @@ export const jobService = {
     }
   },
 
-  // Delete job (soft delete)
+  // Delete job (hard delete)
   deleteJob: async (jobId) => {
     try {
       const jobRef = doc(db, 'jobs', jobId);
-      await updateDoc(jobRef, {
-        status: 'deleted',
-        updatedAt: new Date().toISOString()
-      });
+      await deleteDoc(jobRef);
+      console.log('Job deleted successfully:', jobId);
     } catch (error) {
       console.error('Error deleting job:', error);
       throw error;

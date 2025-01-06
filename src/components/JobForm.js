@@ -150,9 +150,11 @@ const JobForm = ({ initialValues, onSubmit, submitButtonText, category }) => {
         </Text>
       </TouchableOpacity>
       
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitButtonText}>{submitButtonText}</Text>
-      </TouchableOpacity>
+      <View style={styles.bottomContainer}>
+        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+          <Text style={styles.submitButtonText}>{submitButtonText}</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
@@ -252,6 +254,10 @@ const styles = StyleSheet.create({
   picker: {
     height: 50,
     width: '100%',
+  },
+  bottomContainer: {
+    marginBottom: 80,
+    paddingBottom: 20,
   },
 });
 

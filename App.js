@@ -64,7 +64,7 @@ function HomeStack() {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
         headerTitleAlign: 'center',
         headerStyle: {
           backgroundColor: '#fff',
@@ -78,30 +78,29 @@ function HomeStack() {
       <Stack.Screen 
         name="HomeScreen" 
         component={HomeScreen} 
-        options={{ title: 'Hey Job' }}
+        options={{ 
+          title: 'Hey Job',
+        }}
       />
       <Stack.Screen 
         name="CategoryJobs" 
         component={CategoryJobsScreen}
         options={({ route }) => ({ 
-          title: route.params.title,
-          headerShown: true
+          title: `${route.params.category} Jobs`,
         })}
       />
       <Stack.Screen 
         name="CreateJob" 
         component={CreateJobScreen} 
-        options={{ 
-          title: 'Create New Job',
-          headerShown: true
-        }}
+        options={({ route }) => ({ 
+          title: route.params?.job ? 'Edit Job' : 'Create New Job',
+        })}
       />
       <Stack.Screen 
         name="JobDetails" 
         component={JobDetailsScreen} 
         options={{ 
           title: 'Job Details',
-          headerShown: true
         }}
       />
       <Stack.Screen 
@@ -109,7 +108,6 @@ function HomeStack() {
         component={UpdateJobScreen} 
         options={{ 
           title: 'Update Job',
-          headerShown: true
         }}
       />
     </Stack.Navigator>
@@ -144,7 +142,7 @@ function TabNavigator() {
         component={ProfileScreen}
         options={{
           headerShown: true,
-          headerTitle: 'Profile',
+          title: 'My Profile',
           headerTitleAlign: 'center',
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="user" size={size} color={color} />
@@ -183,12 +181,20 @@ export default function App() {
               <Stack.Screen 
                 name="Login" 
                 component={LoginScreen} 
-                options={{ headerShown: false }}
+                options={{ 
+                  title: 'Login',
+                  headerShown: true,
+                  headerTitleAlign: 'center'
+                }}
               />
               <Stack.Screen 
                 name="Register" 
                 component={RegisterScreen}
-                options={{ headerShown: false }}
+                options={{ 
+                  title: 'Create Account',
+                  headerShown: true,
+                  headerTitleAlign: 'center'
+                }}
               />
             </>
           )}
