@@ -1,65 +1,92 @@
-import { ref, set, get, remove, update, push, query, orderByChild } from '@firebase/database';
-import { database } from "../config/firebase";
+import { 
+  collection, 
+  addDoc, 
+  updateDoc, 
+  deleteDoc,
+  doc, 
+  query, 
+  where, 
+  orderBy, 
+  getDocs,
+  serverTimestamp 
+} from '@firebase/firestore';
+import { db, auth } from '../config/firebase';
 
 export const jobService = {
-  // Create a new job
+  // Create job
   createJob: async (jobData) => {
     try {
-      const jobsRef = ref(database, 'jobs');
-      const newJobRef = push(jobsRef);
-      await set(newJobRef, {
-        ...jobData,
-        id: newJobRef.key,
-        createdAt: new Date().toISOString()
-      });
-      return newJobRef.key;
+      const jobRef = collection(db, 'jobs');
+      const newJob = {
+        jobTitle: jobData.jobTitle || '',
+        jobPosition: jobData.jobPosition || '',
+        companyDetails: jobData.companyDetails || '',
+        jobDescription: jobData.jobDescription || '',
+        category: jobData.category,
+        location: jobData.location || '',
+        packageUrl: jobData.packageUrl || '',
+        image: jobData.image || '',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        userId: auth.currentUser?.uid,
+        status: 'active'
+      };
+
+      console.log('Creating new job:', newJob);
+      const docRef = await addDoc(jobRef, newJob);
+      console.log('Job created with ID:', docRef.id);
+      return docRef.id;
     } catch (error) {
       console.error('Error creating job:', error);
       throw error;
     }
   },
 
-  // Get all jobs
-  getAllJobs: async () => {
+  // Get jobs by category
+  getJobsByCategory: async (category) => {
     try {
-      const jobsRef = ref(database, 'jobs');
-      const snapshot = await get(jobsRef);
-      if (snapshot.exists()) {
-        const jobs = [];
-        snapshot.forEach((childSnapshot) => {
-          jobs.push({ id: childSnapshot.key, ...childSnapshot.val() });
-        });
-        return jobs;
-      }
-      return [];
+      console.log('Fetching jobs for category:', category);
+      const jobsQuery = query(
+        collection(db, 'jobs'),
+        where('category', '==', category)
+      );
+
+      const querySnapshot = await getDocs(jobsQuery);
+      const jobs = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate?.() || new Date(),
+      }));
+
+      console.log('Fetched jobs:', jobs);
+
+      // Filter active jobs and sort by date
+      const sortedJobs = jobs
+        .filter(job => job.status === 'active')
+        .sort((a, b) => b.createdAt - a.createdAt);
+
+      return sortedJobs;
     } catch (error) {
       console.error('Error getting jobs:', error);
       throw error;
     }
   },
 
-  // Get a specific job by ID
-  getJobById: async (jobId) => {
-    try {
-      const jobRef = ref(database, `jobs/${jobId}`);
-      const snapshot = await get(jobRef);
-      if (snapshot.exists()) {
-        return { id: snapshot.key, ...snapshot.val() };
-      }
-      return null;
-    } catch (error) {
-      console.error('Error getting job:', error);
-      throw error;
-    }
-  },
-
-  // Update a job
+  // Update job
   updateJob: async (jobId, jobData) => {
     try {
-      const jobRef = ref(database, `jobs/${jobId}`);
-      await update(jobRef, {
-        ...jobData,
-        updatedAt: new Date().toISOString()
+      const jobRef = doc(db, 'jobs', jobId);
+      await updateDoc(jobRef, {
+        jobTitle: jobData.jobTitle,
+        jobPosition: jobData.jobPosition,
+        companyDetails: jobData.companyDetails,
+        jobDescription: jobData.jobDescription,
+        category: jobData.category,
+        location: jobData.location || '',
+        packageUrl: jobData.packageUrl || '',
+        image: jobData.image || '',
+        updatedAt: new Date().toISOString(),
+        status: 'active'
       });
     } catch (error) {
       console.error('Error updating job:', error);
@@ -67,33 +94,34 @@ export const jobService = {
     }
   },
 
-  // Delete a job
+  // Delete job (soft delete)
   deleteJob: async (jobId) => {
     try {
-      const jobRef = ref(database, `jobs/${jobId}`);
-      await remove(jobRef);
+      const jobRef = doc(db, 'jobs', jobId);
+      await updateDoc(jobRef, {
+        status: 'deleted',
+        updatedAt: new Date().toISOString()
+      });
     } catch (error) {
       console.error('Error deleting job:', error);
       throw error;
     }
   },
 
-  // Get jobs by user ID
-  getJobsByUserId: async (userId) => {
+  // Get job by ID
+  getJobById: async (jobId) => {
     try {
-      const jobsRef = ref(database, 'jobs');
-      const userJobsQuery = query(jobsRef, orderByChild('userId'), userId);
-      const snapshot = await get(userJobsQuery);
-      if (snapshot.exists()) {
-        const jobs = [];
-        snapshot.forEach((childSnapshot) => {
-          jobs.push({ id: childSnapshot.key, ...childSnapshot.val() });
-        });
-        return jobs;
+      const jobRef = doc(db, 'jobs', jobId);
+      const jobSnap = await getDocs(jobRef);
+      if (jobSnap.exists()) {
+        return {
+          id: jobSnap.id,
+          ...jobSnap.data()
+        };
       }
-      return [];
+      return null;
     } catch (error) {
-      console.error('Error getting user jobs:', error);
+      console.error('Error getting job:', error);
       throw error;
     }
   }

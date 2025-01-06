@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Linking } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
 const JobDetailsScreen = ({ route, navigation }) => {
   const { job } = route.params;
@@ -28,9 +29,19 @@ const JobDetailsScreen = ({ route, navigation }) => {
         
         <Text style={styles.category}>Category: {job.category}</Text>
         
-        <TouchableOpacity style={styles.button} onPress={openUrl}>
-          <Text style={styles.buttonText}>View Package Details</Text>
-        </TouchableOpacity>
+        <View style={styles.detailRow}>
+          <FontAwesome name="map-marker" size={20} color="#666" />
+          <Text style={styles.detailText}>{job.location || 'Location not specified'}</Text>
+        </View>
+        
+        {job.packageUrl && (
+          <View style={styles.detailRow}>
+            <FontAwesome name="link" size={20} color="#666" />
+            <TouchableOpacity onPress={() => Linking.openURL(job.packageUrl)}>
+              <Text style={[styles.detailText, styles.link]}>View Package Details</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         
         <TouchableOpacity 
           style={[styles.button, styles.editButton]}
@@ -49,7 +60,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: 200,
+    aspectRatio: 1,
   },
   content: {
     padding: 20,
@@ -94,6 +105,20 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  detailText: {
+    fontSize: 16,
+    color: '#666',
+    marginLeft: 5,
+  },
+  link: {
+    color: '#007AFF',
+    textDecorationLine: 'underline',
   },
 });
 

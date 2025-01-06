@@ -9,7 +9,6 @@ import CreateJobScreen from './src/screens/CreateJobScreen';
 import JobDetailsScreen from './src/screens/JobDetailsScreen';
 import UpdateJobScreen from './src/screens/UpdateJobScreen';
 import CategoryJobsScreen from './src/screens/CategoryJobsScreen';
-import PostedJobsScreen from './src/screens/PostedJobsScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
@@ -141,19 +140,6 @@ function TabNavigator() {
         }}
       />
       <Tab.Screen 
-        name="PostedJobs" 
-        component={PostedJobsScreen}
-        options={{
-          tabBarLabel: 'My Jobs',
-          headerShown: true,
-          headerTitle: 'Posted Jobs',
-          headerTitleAlign: 'center',
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome name="briefcase" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen 
         name="Profile" 
         component={ProfileScreen}
         options={{
@@ -183,7 +169,7 @@ export default function App() {
   }, []);
 
   if (loading) {
-    return null; // Or a loading screen
+    return null;
   }
 
   return (
@@ -191,10 +177,8 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           {user ? (
-            // Authenticated stack
             <Stack.Screen name="Main" component={TabNavigator} />
           ) : (
-            // Non-authenticated stack
             <>
               <Stack.Screen 
                 name="Login" 

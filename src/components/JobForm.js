@@ -16,23 +16,24 @@ const JobForm = ({ initialValues, onSubmit, submitButtonText, category }) => {
     jobTitle: initialValues?.jobTitle || '',
     jobPosition: initialValues?.jobPosition || '',
     companyDetails: initialValues?.companyDetails || '',
-    package: initialValues?.package || '',
+    packageUrl: initialValues?.packageUrl || '',
     jobDescription: initialValues?.jobDescription || '',
-    category: category || initialValues?.category || 'Openings'
+    category: category || initialValues?.category || 'Openings',
+    image: initialValues?.image || '',
+    location: initialValues?.location || ''
   });
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
     if (status !== 'granted') {
-      alert('Sorry, we need camera roll permissions to make this work!');
+      Alert.alert('Permission needed', 'Please grant camera roll permissions to upload images.');
       return;
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
       quality: 1,
     });
 
@@ -55,8 +56,6 @@ const JobForm = ({ initialValues, onSubmit, submitButtonText, category }) => {
 
   return (
     <ScrollView style={styles.container}>
-     
-      
       <Text style={styles.label}>
         <Text style={styles.required}>* </Text>
         Job Title
@@ -86,7 +85,6 @@ const JobForm = ({ initialValues, onSubmit, submitButtonText, category }) => {
           selectedValue={formData.category}
           onValueChange={(value) => setFormData({ ...formData, category: value })}
         >
-          <Picker.Item label="Select Category" value="" enabled={false} />
           {CATEGORY_OPTIONS.map((option) => (
             <Picker.Item 
               key={option.value} 
@@ -97,12 +95,32 @@ const JobForm = ({ initialValues, onSubmit, submitButtonText, category }) => {
         </Picker>
       </View>
       
-      <Text style={styles.label}>Company Details</Text>
+      <Text style={styles.label}>
+        <Text style={styles.required}>* </Text>
+        Company Details
+      </Text>
       <TextInput
         style={styles.input}
         placeholder="Enter Company Details"
         value={formData.companyDetails}
         onChangeText={(text) => setFormData({ ...formData, companyDetails: text })}
+      />
+
+      <Text style={styles.label}>Package Opening URL</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter Package URL"
+        value={formData.packageUrl}
+        onChangeText={(text) => setFormData({ ...formData, packageUrl: text })}
+        keyboardType="url"
+      />
+
+      <Text style={styles.label}>Location</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter Job Location"
+        value={formData.location}
+        onChangeText={(text) => setFormData({ ...formData, location: text })}
       />
       
       <Text style={styles.label}>Job Description</Text>
@@ -182,11 +200,13 @@ const styles = StyleSheet.create({
   imageContainer: {
     position: 'relative',
     marginBottom: 10,
+    aspectRatio: 1,
+    width: '100%',
   },
   imagePreview: {
     width: '100%',
-    height: 200,
-    borderRadius: 5,
+    height: '100%',
+    borderRadius: 10,
   },
   imageButton: {
     backgroundColor: 'transparent',

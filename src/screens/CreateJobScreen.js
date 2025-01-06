@@ -1,50 +1,41 @@
 import React from 'react';
-import { View, Alert } from 'react-native';
-import { collection, addDoc, updateDoc, doc } from '@firebase/firestore';
-import { db } from '../config/firebase';
+import { View } from 'react-native';
 import JobForm from '../components/JobForm';
 import Toast from 'react-native-toast-message';
+import { jobService } from '../services/jobService';
 
 const CreateJobScreen = ({ navigation, route }) => {
-  // Get category from navigation params
   const category = route.params?.category || 'Openings';
   const isEditing = route.params?.job !== undefined;
   const initialValues = isEditing ? route.params.job : { category: category };
 
   const handleSubmit = async (jobData) => {
     try {
+      console.log('Submitting job data:', { ...jobData, category }); // Debug log
+
       if (isEditing) {
-        // Update existing document
-        const jobRef = doc(db, 'jobs', jobData.id);
-        await updateDoc(jobRef, {
+        await jobService.updateJob(jobData.id, {
           ...jobData,
-          category: category, // Ensure category is preserved
-          updatedAt: new Date().toISOString()
-        });
-        Toast.show({
-          type: 'success',
-          text1: 'Success',
-          text2: 'Job updated successfully!'
+          category: category
         });
       } else {
-        // Create new document with specified category
-        await addDoc(collection(db, 'jobs'), {
+        await jobService.createJob({
           ...jobData,
-          category: category, // Set the category from route params
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        });
-        Toast.show({
-          type: 'success',
-          text1: 'Success',
-          text2: 'Job created successfully!'
+          category: category
         });
       }
-      
-      // Navigate back to the specific category with refresh flag
+
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: `Job ${isEditing ? 'updated' : 'created'} successfully!`
+      });
+
+      // Force a refresh when navigating back
       navigation.navigate('CategoryJobs', {
         category: category,
-        refresh: true
+        refresh: true,
+        timestamp: Date.now() // Force refresh
       });
     } catch (error) {
       console.error('Error saving job:', error);
@@ -62,7 +53,7 @@ const CreateJobScreen = ({ navigation, route }) => {
         initialValues={initialValues}
         onSubmit={handleSubmit}
         submitButtonText={isEditing ? 'Update Job' : 'Create Job'}
-        category={category} // Pass category to form
+        category={category}
       />
     </View>
   );

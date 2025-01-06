@@ -5,6 +5,9 @@ import {
   ScrollView, 
   TouchableOpacity, 
   Text,
+  SafeAreaView,
+  Platform,
+  StatusBar
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
@@ -39,36 +42,27 @@ const HomeScreen = ({ navigation }) => {
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.categoriesContainer}>
-        <View style={styles.gridContainer}>
-          {CATEGORIES.map(category => renderCategoryCard(category))}
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container}>
+        <View style={styles.categoriesContainer}>
+          <View style={styles.gridContainer}>
+            {CATEGORIES.map(category => renderCategoryCard(category))}
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+  },
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
-  },
-  header: {
-    padding: 20,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 4,
-  },
-  dateText: {
-    fontSize: 14,
-    color: '#666',
   },
   categoriesContainer: {
     padding: 12,
@@ -112,18 +106,6 @@ const styles = StyleSheet.create({
     color: '#333',
     marginTop: 12,
     textAlign: 'center',
-  },
-  loader: {
-    marginTop: 20,
-  },
-  jobsContainer: {
-    padding: 15,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    color: '#333',
   },
 });
 

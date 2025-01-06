@@ -3,9 +3,10 @@ import { View, FlatList, StyleSheet, TouchableOpacity, TextInput, Text } from 'r
 import { FontAwesome } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
 import JobCard from '../components/JobCard';
-import { collection, query, where, getDocs } from '@firebase/firestore';
+import { collection, query, where, getDocs, orderBy } from '@firebase/firestore';
 import { db } from '../config/firebase';
 import Toast from 'react-native-toast-message';
+import { jobService } from '../services/jobService';
 
 const CategoryJobsScreen = ({ navigation, route }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -16,19 +17,9 @@ const CategoryJobsScreen = ({ navigation, route }) => {
 
   const loadJobs = async () => {
     try {
-      const jobsQuery = query(
-        collection(db, 'jobs'),
-        where('category', '==', category)
-      );
-      const querySnapshot = await getDocs(jobsQuery);
-      const jobsList = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        date: new Date(doc.data().createdAt)
-      }));
-
-      const sortedJobs = jobsList.sort((a, b) => b.date - a.date);
-      setJobs(sortedJobs);
+      setLoading(true);
+      const jobsList = await jobService.getJobsByCategory(category);
+      setJobs(jobsList);
     } catch (error) {
       console.error('Error loading jobs:', error);
       Toast.show({
@@ -55,7 +46,9 @@ const CategoryJobsScreen = ({ navigation, route }) => {
   const handleSort = () => {
     setSortAscending(!sortAscending);
     setJobs([...jobs].sort((a, b) => {
-      return sortAscending ? a.date - b.date : b.date - a.date;
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return sortAscending ? dateA - dateB : dateB - dateA;
     }));
   };
 
