@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, TouchableOpacity, Text, ScrollView, Image } from 'react-native';
+import { View, TextInput, StyleSheet, TouchableOpacity, Text, ScrollView, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
 
@@ -11,16 +11,14 @@ const CATEGORY_OPTIONS = [
   { label: 'Openings', value: 'Openings' },
 ];
 
-const JobForm = ({ initialValues = {}, onSubmit, submitButtonText = 'Submit' }) => {
-  const [jobData, setJobData] = useState({
-    jobTitle: "",
-    jobPosition: "",
-    category: "Openings",
-    companyDetails: "",
-    jobDescription: "",
-    image: "",
-    packageUrl: "",
-    ...initialValues,
+const JobForm = ({ initialValues, onSubmit, submitButtonText, category }) => {
+  const [formData, setFormData] = useState({
+    jobTitle: initialValues?.jobTitle || '',
+    jobPosition: initialValues?.jobPosition || '',
+    companyDetails: initialValues?.companyDetails || '',
+    package: initialValues?.package || '',
+    jobDescription: initialValues?.jobDescription || '',
+    category: category || initialValues?.category || 'Openings'
   });
 
   const pickImage = async () => {
@@ -39,22 +37,20 @@ const JobForm = ({ initialValues = {}, onSubmit, submitButtonText = 'Submit' }) 
     });
 
     if (!result.canceled) {
-      setJobData({ ...jobData, image: result.assets[0].uri });
+      setFormData({ ...formData, image: result.assets[0].uri });
     }
   };
 
   const handleSubmit = () => {
-    if (!jobData.jobTitle || !jobData.jobPosition) {
-      alert('Please fill in all required fields (Job Title and Position)');
+    if (!formData.jobTitle || !formData.jobPosition || !formData.companyDetails) {
+      Alert.alert('Error', 'Please fill in all required fields');
       return;
     }
 
-    const finalJobData = {
-      ...jobData,
-      image: jobData.image || 'https://picsum.photos/200'
-    };
-
-    onSubmit(finalJobData);
+    onSubmit({
+      ...formData,
+      category: category
+    });
   };
 
   return (
@@ -68,8 +64,8 @@ const JobForm = ({ initialValues = {}, onSubmit, submitButtonText = 'Submit' }) 
       <TextInput
         style={styles.input}
         placeholder="Enter Job Title"
-        value={jobData.jobTitle}
-        onChangeText={(text) => setJobData({ ...jobData, jobTitle: text })}
+        value={formData.jobTitle}
+        onChangeText={(text) => setFormData({ ...formData, jobTitle: text })}
       />
       
       <Text style={styles.label}>
@@ -79,16 +75,16 @@ const JobForm = ({ initialValues = {}, onSubmit, submitButtonText = 'Submit' }) 
       <TextInput
         style={styles.input}
         placeholder="Enter Job Position"
-        value={jobData.jobPosition}
-        onChangeText={(text) => setJobData({ ...jobData, jobPosition: text })}
+        value={formData.jobPosition}
+        onChangeText={(text) => setFormData({ ...formData, jobPosition: text })}
       />
       
       <Text style={styles.label}>Category</Text>
       <View style={styles.pickerContainer}>
         <Picker
           style={styles.picker}
-          selectedValue={jobData.category}
-          onValueChange={(value) => setJobData({ ...jobData, category: value })}
+          selectedValue={formData.category}
+          onValueChange={(value) => setFormData({ ...formData, category: value })}
         >
           <Picker.Item label="Select Category" value="" enabled={false} />
           {CATEGORY_OPTIONS.map((option) => (
@@ -105,26 +101,26 @@ const JobForm = ({ initialValues = {}, onSubmit, submitButtonText = 'Submit' }) 
       <TextInput
         style={styles.input}
         placeholder="Enter Company Details"
-        value={jobData.companyDetails}
-        onChangeText={(text) => setJobData({ ...jobData, companyDetails: text })}
+        value={formData.companyDetails}
+        onChangeText={(text) => setFormData({ ...formData, companyDetails: text })}
       />
       
       <Text style={styles.label}>Job Description</Text>
       <TextInput
         style={[styles.input, styles.multilineInput]}
         placeholder="Enter Job Description"
-        value={jobData.jobDescription}
-        onChangeText={(text) => setJobData({ ...jobData, jobDescription: text })}
+        value={formData.jobDescription}
+        onChangeText={(text) => setFormData({ ...formData, jobDescription: text })}
         multiline
       />
 
       <Text style={styles.label}>Image</Text>
-      {jobData.image ? (
+      {formData.image ? (
         <View style={styles.imageContainer}>
-          <Image source={{ uri: jobData.image }} style={styles.imagePreview} />
+          <Image source={{ uri: formData.image }} style={styles.imagePreview} />
           <TouchableOpacity 
             style={styles.removeImageButton}
-            onPress={() => setJobData({ ...jobData, image: '' })}
+            onPress={() => setFormData({ ...formData, image: '' })}
           >
             <Text style={styles.removeImageText}>×</Text>
           </TouchableOpacity>
@@ -132,7 +128,7 @@ const JobForm = ({ initialValues = {}, onSubmit, submitButtonText = 'Submit' }) 
       ) : null}
       <TouchableOpacity style={styles.imageButton} onPress={pickImage}>
         <Text style={styles.imageButtonText}>
-          {jobData.image ? 'Change Image' : 'Pick an image'}
+          {formData.image ? 'Change Image' : 'Pick an image'}
         </Text>
       </TouchableOpacity>
       

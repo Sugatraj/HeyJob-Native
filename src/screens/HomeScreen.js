@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Text } from 'react-native';
+import { 
+  View, 
+  StyleSheet, 
+  ScrollView, 
+  TouchableOpacity, 
+  Text,
+} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { getCurrentDate } from '../utils/dateUtils';
 
 const CATEGORIES = [
   { id: '1', name: 'WFH', icon: 'home' },
@@ -12,10 +17,7 @@ const CATEGORIES = [
 ];
 
 const HomeScreen = ({ navigation }) => {
-  const [selectedCategory, setSelectedCategory] = useState('Openings');
-
   const handleCategoryPress = (categoryName) => {
-    setSelectedCategory(categoryName);
     navigation.navigate('CategoryJobs', {
       category: categoryName,
       title: categoryName
@@ -38,7 +40,6 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
-      
       <View style={styles.categoriesContainer}>
         <View style={styles.gridContainer}>
           {CATEGORIES.map(category => renderCategoryCard(category))}
@@ -111,6 +112,18 @@ const styles = StyleSheet.create({
     color: '#333',
     marginTop: 12,
     textAlign: 'center',
+  },
+  loader: {
+    marginTop: 20,
+  },
+  jobsContainer: {
+    padding: 15,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    color: '#333',
   },
 });
 
