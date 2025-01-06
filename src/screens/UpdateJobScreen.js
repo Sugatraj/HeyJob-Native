@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import JobForm from '../components/JobForm';
 import { jobService } from '../services/jobService';
 import Toast from 'react-native-toast-message';
@@ -20,7 +20,6 @@ const UpdateJobScreen = ({ route, navigation }) => {
         text2: 'Job updated successfully!'
       });
 
-      // Navigate back to category with refresh flag
       navigation.navigate('CategoryJobs', {
         category: job.category,
         refresh: true,
@@ -37,19 +36,22 @@ const UpdateJobScreen = ({ route, navigation }) => {
   };
 
   return (
-    <View style={{ 
-      flex: 1, 
-      backgroundColor: '#fff',
-      paddingBottom: 80
-    }}>
+    <View style={styles.container}>
       <JobForm 
         initialValues={job}
         onSubmit={handleSubmit}
-        submitButtonText="Update Jobs"
+        submitButtonText="Update Job"
         category={job.category}
       />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  }
+});
 
 export default UpdateJobScreen; 

@@ -3,6 +3,11 @@ import { View, Text, TouchableOpacity, StyleSheet, Linking, Alert } from 'react-
 import { FontAwesome } from '@expo/vector-icons';
 import { formatDate } from '../utils/dateUtils';
 
+const formatPackage = (value) => {
+  if (!value) return '';
+  return `${value} LPA`;
+};
+
 const JobCard = ({ job, onPress }) => {
   const shareMessage = `Job Opening: ${job.jobTitle}\nPosition: ${job.jobPosition}\nLocation: ${job.location || 'Not specified'}\nCompany: ${job.companyDetails}\n\nJob Description:\n${job.jobDescription}\n\nPackage Details: ${job.packageUrl || 'Not specified'}`;
 
@@ -80,9 +85,9 @@ const JobCard = ({ job, onPress }) => {
               <Text style={styles.jobTitle}>{job.jobTitle}</Text>
               <View style={styles.positionRow}>
                 <Text style={styles.jobPosition}>{job.jobPosition}</Text>
-                {job.location && (
-                  <Text style={styles.locationText}>
-                    <FontAwesome name="map-marker" size={14} color="#666" /> {job.location}
+                {job.package && (
+                  <Text style={styles.packageText}>
+                    <FontAwesome name="money" size={14} color="#666" /> {formatPackage(job.package)}
                   </Text>
                 )}
               </View>
@@ -217,6 +222,11 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: 10,
     marginBottom: 10,
+  },
+  packageText: {
+    fontSize: 14,
+    color: "#666",
+    fontWeight: "500",
   },
 });
 

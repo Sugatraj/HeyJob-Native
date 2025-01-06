@@ -16,6 +16,11 @@ import { auth } from '../config/firebase';
 import { jobService } from '../services/jobService';
 import Toast from 'react-native-toast-message';
 
+const formatPackage = (value) => {
+  if (!value) return 'Not specified';
+  return `${value} LPA`;
+};
+
 const JobDetailsScreen = ({ route, navigation }) => {
   const { job } = route.params;
   const isOwner = auth.currentUser?.uid === job.userId;
@@ -27,10 +32,9 @@ Job Opening: ${job.jobTitle}
 Position: ${job.jobPosition}
 Company: ${job.companyDetails}
 Location: ${job.location || 'Not specified'}
+Package: ${formatPackage(job.package)}
 
 ${job.jobDescription}
-
-Package Details: ${job.packageUrl || 'Not specified'}
       `.trim();
 
       await Share.share({
@@ -113,29 +117,26 @@ Package Details: ${job.packageUrl || 'Not specified'}
 
           <View style={styles.infoRow}>
             <FontAwesome name="calendar" size={20} color="#666" />
-            <Text style={styles.infoText}>Posted {formatDate(job.createdAt)}</Text>
+            <Text style={styles.infoText}>{formatDate(job.createdAt)}</Text>
           </View>
 
           <View style={styles.infoRow}>
             <FontAwesome name="tag" size={20} color="#666" />
-            <Text style={styles.infoText}>Category: {job.category}</Text>
+            <Text style={styles.infoText}>{job.category}</Text>
           </View>
+
+          {job.package && (
+            <View style={styles.infoRow}>
+              <FontAwesome name="money" size={20} color="#666" />
+              <Text style={styles.infoText}>{formatPackage(job.package)}</Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Job Description</Text>
           <Text style={styles.description}>{job.jobDescription}</Text>
         </View>
-        
-        {job.packageUrl && (
-          <TouchableOpacity 
-            style={styles.linkButton}
-            onPress={() => Linking.openURL(job.packageUrl)}
-          >
-            <FontAwesome name="external-link" size={20} color="#fff" />
-            <Text style={styles.linkButtonText}>View Package Details</Text>
-          </TouchableOpacity>
-        )}
 
         {isOwner && (
           <View style={styles.actionButtons}>

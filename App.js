@@ -14,6 +14,7 @@ import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import { getAuth, onAuthStateChanged } from '@firebase/auth';
 import Toast, { BaseToast } from 'react-native-toast-message';
+import { Platform } from 'react-native';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -171,41 +172,44 @@ export default function App() {
   }
 
   return (
-    <>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          {user ? (
-            <Stack.Screen name="Main" component={TabNavigator} />
-          ) : (
-            <>
-              <Stack.Screen 
-                name="Login" 
-                component={LoginScreen} 
-                options={{ 
-                  title: 'Login',
-                  headerShown: true,
-                  headerTitleAlign: 'center'
-                }}
-              />
-              <Stack.Screen 
-                name="Register" 
-                component={RegisterScreen}
-                options={{ 
-                  title: 'Create Account',
-                  headerShown: true,
-                  headerTitleAlign: 'center'
-                }}
-              />
-            </>
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
+    <NavigationContainer
+      documentTitle={{
+        formatter: (options, route) => 
+          `${options?.title ?? route?.name} - HeyJob`,
+      }}
+    >
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {user ? (
+          <Stack.Screen name="Main" component={TabNavigator} />
+        ) : (
+          <>
+            <Stack.Screen 
+              name="Login" 
+              component={LoginScreen} 
+              options={{ 
+                title: 'Login',
+                headerShown: true,
+                headerTitleAlign: 'center'
+              }}
+            />
+            <Stack.Screen 
+              name="Register" 
+              component={RegisterScreen}
+              options={{ 
+                title: 'Create Account',
+                headerShown: true,
+                headerTitleAlign: 'center'
+              }}
+            />
+          </>
+        )}
+      </Stack.Navigator>
       <Toast 
         config={toastConfig}
         position='bottom'
         bottomOffset={20}
         visibilityTime={2000}
       />
-    </>
+    </NavigationContainer>
   );
 } 

@@ -21,10 +21,10 @@ export const jobService = {
         jobTitle: jobData.jobTitle || '',
         jobPosition: jobData.jobPosition || '',
         companyDetails: jobData.companyDetails || '',
+        package: jobData.package ? parseFloat(jobData.package) : null,
         jobDescription: jobData.jobDescription || '',
         category: jobData.category,
         location: jobData.location || '',
-        packageUrl: jobData.packageUrl || '',
         image: jobData.image || '',
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
@@ -80,12 +80,12 @@ export const jobService = {
         jobTitle: jobData.jobTitle,
         jobPosition: jobData.jobPosition,
         companyDetails: jobData.companyDetails,
+        package: jobData.package ? parseFloat(jobData.package) : null,
         jobDescription: jobData.jobDescription,
         category: jobData.category,
         location: jobData.location || '',
-        packageUrl: jobData.packageUrl || '',
         image: jobData.image || '',
-        updatedAt: new Date().toISOString(),
+        updatedAt: serverTimestamp(),
         status: 'active'
       });
     } catch (error) {

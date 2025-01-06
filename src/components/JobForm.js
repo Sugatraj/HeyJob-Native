@@ -16,7 +16,7 @@ const JobForm = ({ initialValues, onSubmit, submitButtonText, category }) => {
     jobTitle: initialValues?.jobTitle || '',
     jobPosition: initialValues?.jobPosition || '',
     companyDetails: initialValues?.companyDetails || '',
-    packageUrl: initialValues?.packageUrl || '',
+    package: initialValues?.package || '',
     jobDescription: initialValues?.jobDescription || '',
     category: category || initialValues?.category || 'Openings',
     image: initialValues?.image || '',
@@ -42,14 +42,25 @@ const JobForm = ({ initialValues, onSubmit, submitButtonText, category }) => {
     }
   };
 
+  const handlePackageChange = (text) => {
+    const numericValue = text.replace(/[^0-9.]/g, '');
+    setFormData({ ...formData, package: numericValue });
+  };
+
   const handleSubmit = () => {
     if (!formData.jobTitle || !formData.jobPosition || !formData.companyDetails) {
       Alert.alert('Error', 'Please fill in all required fields');
       return;
     }
 
+    if (formData.package && isNaN(parseFloat(formData.package))) {
+      Alert.alert('Error', 'Package must be a valid number');
+      return;
+    }
+
     onSubmit({
       ...formData,
+      package: formData.package ? parseFloat(formData.package) : '',
       category: category
     });
   };
@@ -106,13 +117,14 @@ const JobForm = ({ initialValues, onSubmit, submitButtonText, category }) => {
         onChangeText={(text) => setFormData({ ...formData, companyDetails: text })}
       />
 
-      <Text style={styles.label}>Package Opening URL</Text>
+      <Text style={styles.label}>Package (LPA)</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter Package URL"
-        value={formData.packageUrl}
-        onChangeText={(text) => setFormData({ ...formData, packageUrl: text })}
-        keyboardType="url"
+        placeholder="Enter Package (e.g., 3.5)"
+        value={formData.package}
+        onChangeText={handlePackageChange}
+        keyboardType="numeric"
+        maxLength={10}
       />
 
       <Text style={styles.label}>Location</Text>
@@ -183,6 +195,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
+    marginBottom: 20,
   },
   submitButtonText: {
     color: 'white',
@@ -256,8 +269,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   bottomContainer: {
-    marginBottom: 80,
-    paddingBottom: 20,
+    paddingBottom: 100,
+    marginBottom: 20,
   },
 });
 
