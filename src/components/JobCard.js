@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { 
   View, 
   Text, 
@@ -20,7 +20,7 @@ const formatPackage = (value) => {
 
 const JobCard = ({ job, onPress }) => {
   const { width } = useWindowDimensions();
-  const isMobile = width < 768;
+  const isSmallScreen = width < 360;
 
   const shareMessage = `
 🔥 *New Job Opening* 🔥
@@ -107,6 +107,12 @@ Share this opportunity with your friends who might be interested.
     { platform: 'instagram', color: '#E1306C' }
   ];
 
+  const dynamicStyles = useMemo(() => ({
+    copyButton: {
+      minWidth: isSmallScreen ? 36 : 90,
+    }
+  }), [isSmallScreen]);
+
   return (
     <View style={styles.cardContainer}>
       <View style={styles.card}>
@@ -130,39 +136,54 @@ Share this opportunity with your friends who might be interested.
             </View>
           </View>
 
-          <View style={styles.socialIcons}>
-            <ScrollView 
-              horizontal={isMobile}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.socialIconsGroup}
-            >
-              {socialIcons.map((icon) => (
-                <TouchableOpacity
-                  key={icon.platform}
-                  style={styles.iconContainer}
-                  onPress={() => handleShare(icon.platform)}
-                >
-                  <FontAwesome 
-                    name={icon.platform} 
-                    size={26} 
-                    color={icon.color}
-                  />
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-            
-            <TouchableOpacity 
-              style={styles.copyButton} 
-              onPress={handleCopy}
-            >
-              <FontAwesome 
-                name="copy" 
-                size={26} 
-                color="#666" 
-                style={styles.copyIcon}
-              />
-              <Text style={styles.copyButtonText}>Copy</Text>
-            </TouchableOpacity>
+          <View style={styles.shareSection}>
+            <View style={styles.socialIconsWrapper}>
+              <ScrollView 
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={[
+                  styles.socialIconsContainer,
+                  isSmallScreen && styles.socialIconsContainerSmall
+                ]}
+              >
+                {socialIcons.map((icon) => (
+                  <TouchableOpacity
+                    key={icon.platform}
+                    style={[
+                      styles.iconButton,
+                      isSmallScreen && styles.iconButtonSmall
+                    ]}
+                    onPress={() => handleShare(icon.platform)}
+                  >
+                    <FontAwesome 
+                      name={icon.platform} 
+                      size={isSmallScreen ? 20 : 24} 
+                      color={icon.color}
+                    />
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+
+            <View style={styles.copyButtonWrapper}>
+              <TouchableOpacity 
+                style={[
+                  styles.copyButton,
+                  dynamicStyles.copyButton,
+                  isSmallScreen && styles.copyButtonSmall
+                ]} 
+                onPress={handleCopy}
+              >
+                <FontAwesome 
+                  name="copy" 
+                  size={isSmallScreen ? 20 : 24} 
+                  color="#666" 
+                />
+                {!isSmallScreen && (
+                  <Text style={styles.copyButtonText}>Copy</Text>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
         </TouchableOpacity>
       </View>
@@ -276,6 +297,62 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
     fontWeight: "500",
+  },
+  shareSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 15,
+    gap: 8,
+  },
+  socialIconsWrapper: {
+    flex: 1,
+  },
+  socialIconsContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingRight: 8,
+  },
+  socialIconsContainerSmall: {
+    gap: 4,
+    paddingRight: 4,
+  },
+  iconButton: {
+    backgroundColor: '#f5f5f5',
+    padding: 10,
+    borderRadius: 8,
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 4,
+  },
+  iconButtonSmall: {
+    padding: 8,
+    width: 36,
+    height: 36,
+  },
+  copyButtonWrapper: {
+    marginLeft: 'auto',
+  },
+  copyButton: {
+    backgroundColor: '#f5f5f5',
+    padding: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    height: 44,
+  },
+  copyButtonSmall: {
+    padding: 8,
+    paddingHorizontal: 8,
+    height: 36,
+  },
+  copyButtonText: {
+    fontSize: 14,
+    color: '#666',
+    fontWeight: '500',
   },
 });
 
