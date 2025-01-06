@@ -1,5 +1,15 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Linking, Alert } from 'react-native';
+import { 
+  View, 
+  Text, 
+  TouchableOpacity, 
+  StyleSheet, 
+  Linking, 
+  Alert,
+  useWindowDimensions,
+  Clipboard,
+  ScrollView 
+} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { formatDate } from '../utils/dateUtils';
 
@@ -9,7 +19,27 @@ const formatPackage = (value) => {
 };
 
 const JobCard = ({ job, onPress }) => {
-  const shareMessage = `Job Opening: ${job.jobTitle}\nPosition: ${job.jobPosition}\nLocation: ${job.location || 'Not specified'}\nCompany: ${job.companyDetails}\n\nJob Description:\n${job.jobDescription}\n\nPackage Details: ${job.packageUrl || 'Not specified'}`;
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+
+  const shareMessage = `
+🔥 *New Job Opening* 🔥
+
+*Position:* ${job.jobTitle}
+*Role:* ${job.jobPosition}
+*Company:* ${job.companyDetails}
+${job.location ? `*Location:* ${job.location}` : ''}
+${job.package ? `*Package:* ${formatPackage(job.package)}` : ''}
+
+*Job Description:*
+${job.jobDescription}
+
+--------------------------------
+📌 Apply now! 
+Share this opportunity with your friends who might be interested.
+
+#JobOpening #Career #Opportunity ${job.category ? `#${job.category.replace(/\s+/g, '')}` : ''}
+`.trim();
 
   const handleShare = async (platform) => {
     try {
@@ -59,18 +89,23 @@ const JobCard = ({ job, onPress }) => {
     }
   };
 
-  const handleCopy = () => {
-    if (navigator?.clipboard) {
-      navigator.clipboard.writeText(shareMessage)
-        .then(() => {
-          Alert.alert('Success', 'Content copied to clipboard!');
-        })
-        .catch(err => {
-          console.error('Failed to copy: ', err);
-          Alert.alert('Error', 'Failed to copy content');
-        });
+  const handleCopy = async () => {
+    try {
+      await Clipboard.setString(shareMessage);
+      Alert.alert('Success', 'Job details copied to clipboard! You can now paste and share.');
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+      Alert.alert('Error', 'Failed to copy to clipboard');
     }
   };
+
+  const socialIcons = [
+    { platform: 'whatsapp', color: '#25D366' },
+    { platform: 'facebook', color: '#4267B2' },
+    { platform: 'linkedin', color: '#0077B5' },
+    { platform: 'telegram', color: '#0088cc' },
+    { platform: 'instagram', color: '#E1306C' }
+  ];
 
   return (
     <View style={styles.cardContainer}>
@@ -96,26 +131,36 @@ const JobCard = ({ job, onPress }) => {
           </View>
 
           <View style={styles.socialIcons}>
-            <View style={styles.socialIconsGroup}>
-              <TouchableOpacity style={styles.iconContainer} onPress={() => handleShare('whatsapp')}>
-                <FontAwesome name="whatsapp" size={26} color="#25D366" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconContainer} onPress={() => handleShare('facebook')}>
-                <FontAwesome name="facebook" size={26} color="#4267B2" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconContainer} onPress={() => handleShare('linkedin')}>
-                <FontAwesome name="linkedin" size={26} color="#0077B5" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconContainer} onPress={() => handleShare('telegram')}>
-                <FontAwesome name="telegram" size={26} color="#0088cc" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconContainer} onPress={() => handleShare('instagram')}>
-                <FontAwesome name="instagram" size={26} color="#E1306C" />
-              </TouchableOpacity>
-            </View>
+            <ScrollView 
+              horizontal={isMobile}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.socialIconsGroup}
+            >
+              {socialIcons.map((icon) => (
+                <TouchableOpacity
+                  key={icon.platform}
+                  style={styles.iconContainer}
+                  onPress={() => handleShare(icon.platform)}
+                >
+                  <FontAwesome 
+                    name={icon.platform} 
+                    size={26} 
+                    color={icon.color}
+                  />
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
             
-            <TouchableOpacity style={styles.copyButton} onPress={handleCopy}>
-              <FontAwesome name="copy" size={26} color="#666" style={styles.copyIcon} />
+            <TouchableOpacity 
+              style={styles.copyButton} 
+              onPress={handleCopy}
+            >
+              <FontAwesome 
+                name="copy" 
+                size={26} 
+                color="#666" 
+                style={styles.copyIcon}
+              />
               <Text style={styles.copyButtonText}>Copy</Text>
             </TouchableOpacity>
           </View>
@@ -181,41 +226,45 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   socialIcons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginTop: 10,
+    flexWrap: 'wrap',
   },
   socialIconsGroup: {
-    flexDirection: "row",
-    gap: 10,
+    flexDirection: 'row',
+    flexGrow: 1,
+    gap: 8,
+    flexWrap: 'wrap',
   },
   iconContainer: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: '#f0f0f0',
     padding: 8,
     borderRadius: 5,
-    width: 60,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
+    minWidth: 50,
+    height: 45,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   copyButton: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: '#f0f0f0',
     padding: 8,
     paddingHorizontal: 16,
     borderRadius: 5,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    height: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 45,
+    marginLeft: 8,
   },
   copyIcon: {
     marginRight: 6,
   },
   copyButtonText: {
     fontSize: 14,
-    color: "#666",
-    fontWeight: "500",
+    color: '#666',
+    fontWeight: '500',
   },
   jobImage: {
     width: '100%',
