@@ -142,7 +142,10 @@ ${job.jobDescription}
           <View style={styles.actionButtons}>
             <TouchableOpacity 
               style={[styles.button, styles.editButton]}
-              onPress={() => navigation.navigate('UpdateJob', { job })}
+              onPress={() => navigation.navigate('CreateJob', { 
+                job,
+                category: job.category 
+              })}
             >
               <FontAwesome name="edit" size={20} color="#fff" />
               <Text style={styles.buttonText}>Edit Job</Text>
@@ -173,6 +176,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
+    paddingBottom: 0,
   },
   header: {
     flexDirection: 'row',
@@ -223,7 +227,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 10,
     padding: 15,
-    marginBottom: 20,
+    marginBottom: 15,
     elevation: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -260,6 +264,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 10,
+    marginTop: 5,
+    marginBottom: 20,
+    paddingHorizontal: 0,
   },
   button: {
     flex: 1,
