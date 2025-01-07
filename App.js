@@ -143,7 +143,7 @@ function TabNavigator() {
         component={ProfileScreen}
         options={{
           headerShown: true,
-          title: 'My Profile',
+          title: 'Profile',
           headerTitleAlign: 'center',
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="user" size={size} color={color} />

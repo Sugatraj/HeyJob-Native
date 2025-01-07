@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,27 +6,58 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform
 } from 'react-native';
+import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
 import { authService } from '../services/authService';
+import { auth } from '../config/firebase';
 
 const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [otp, setOtp] = useState('');
+  const [verificationId, setVerificationId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const recaptchaVerifier = useRef(null);
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+  const handleSendOTP = async () => {
+    if (!phoneNumber || phoneNumber.length < 10) {
+      Alert.alert('Error', 'Please enter a valid phone number');
       return;
     }
 
     setLoading(true);
     try {
-      await authService.login(email, password);
+      const formattedPhoneNumber = phoneNumber.startsWith('+91') 
+        ? phoneNumber 
+        : `+91${phoneNumber}`;
+      
+      const verificationId = await authService.requestOTP(
+        formattedPhoneNumber,
+        recaptchaVerifier.current
+      );
+      setVerificationId(verificationId);
+      Alert.alert('Success', 'OTP has been sent to your phone number');
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+      Alert.alert('Error', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async () => {
+    if (!otp || otp.length !== 6) {
+      Alert.alert('Error', 'Please enter a valid 6-digit OTP');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await authService.verifyOTP(verificationId, otp);
       // Navigation will be handled by the auth state listener in App.js
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Error verifying OTP:', error);
       Alert.alert('Error', error.message);
     } finally {
       setLoading(false);
@@ -35,50 +66,75 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome Back!</Text>
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
+      <FirebaseRecaptchaVerifierModal
+        ref={recaptchaVerifier}
+        firebaseConfig={auth.app.options}
       />
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleLogin}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Login</Text>
-        )}
-      </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={() => navigation.navigate('Register')}
-        style={styles.linkButton}
-      >
-        <Text style={styles.linkText}>Don't have an account? Register</Text>
-      </TouchableOpacity>
+      <Text style={styles.title}>Welcome to HeyJob!</Text>
+      
+      {!verificationId ? (
+        <>
+          <Text style={styles.subtitle}>Enter your phone number to continue</Text>
+          <View style={styles.phoneInputContainer}>
+            <Text style={styles.countryCode}>+91</Text>
+            <TextInput
+              style={styles.phoneInput}
+              placeholder="Phone Number"
+              value={phoneNumber.replace('+91', '')}
+              onChangeText={(text) => setPhoneNumber(text.replace(/[^0-9]/g, ''))}
+              keyboardType="phone-pad"
+              maxLength={10}
+            />
+          </View>
+          
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleSendOTP}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Send OTP</Text>
+            )}
+          </TouchableOpacity>
+        </>
+      ) : (
+        <>
+          <Text style={styles.subtitle}>Enter the OTP sent to your phone</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter 6-digit OTP"
+            value={otp}
+            onChangeText={setOtp}
+            keyboardType="number-pad"
+            maxLength={6}
+          />
+          
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleVerifyOTP}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Verify OTP</Text>
+            )}
+          </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={() => navigation.navigate('ForgotPassword')}
-        style={styles.linkButton}
-      >
-        <Text style={styles.linkText}>Forgot Password?</Text>
-      </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.resendButton}
+            onPress={() => {
+              setVerificationId(null);
+              setOtp('');
+            }}
+          >
+            <Text style={styles.resendText}>Change Phone Number</Text>
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 };
@@ -93,8 +149,33 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
     marginBottom: 30,
     textAlign: 'center',
+  },
+  phoneInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 10,
+    marginBottom: 15,
+    paddingHorizontal: 15,
+  },
+  countryCode: {
+    fontSize: 16,
+    color: '#333',
+    marginRight: 10,
+  },
+  phoneInput: {
+    flex: 1,
+    fontSize: 16,
+    paddingVertical: 15,
   },
   input: {
     borderWidth: 1,
@@ -116,11 +197,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  linkButton: {
+  resendButton: {
     marginTop: 15,
     alignItems: 'center',
   },
-  linkText: {
+  resendText: {
     color: '#007AFF',
     fontSize: 16,
   },

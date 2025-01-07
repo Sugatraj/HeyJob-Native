@@ -19,19 +19,9 @@ import { authService } from '../services/authService';
 const ProfileScreen = ({ navigation }) => {
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [authDetails, setAuthDetails] = useState(null);
 
   useEffect(() => {
     loadUserProfile();
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      setAuthDetails({
-        email: currentUser.email,
-        emailVerified: currentUser.emailVerified,
-        createdAt: currentUser.metadata.creationTime,
-        lastLogin: currentUser.metadata.lastSignInTime,
-      });
-    }
   }, []);
 
   const loadUserProfile = async () => {
@@ -42,7 +32,7 @@ const ProfileScreen = ({ navigation }) => {
         if (userDoc.exists()) {
           setUserProfile({
             id: user.uid,
-            email: user.email,
+            phoneNumber: user.phoneNumber,
             ...userDoc.data()
           });
         }
@@ -92,41 +82,27 @@ const ProfileScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <View style={styles.profileHeader}>
-          <View style={styles.avatarContainer}>
-            <FontAwesome name="user-circle" size={80} color="#007AFF" />
-          </View>
-          {/* <Text style={styles.name}>{userProfile?.fullName || 'User'}</Text> */}
-          <Text style={styles.email}>{authDetails?.email}</Text>
-        </View>
-
-        <View style={styles.infoSection}>
-          <Text style={styles.sectionTitle}>Account Information</Text>
-          <View style={styles.infoRow}>
-            <FontAwesome name="envelope" size={20} color="#666" />
-            <Text style={styles.infoText}>{authDetails?.email}</Text>
-          </View>
-          <View style={styles.infoRow}>
-            <FontAwesome name="check-circle" size={20} color={authDetails?.emailVerified ? "#4CAF50" : "#FF3B30"} />
-            <Text style={styles.infoText}>
-              {authDetails?.emailVerified ? 'Email Verified' : 'Email Not Verified'}
+        <View style={styles.contentContainer}>
+          <View style={styles.messageContainer}>
+            <Text style={styles.messageText}>
+              You are currently logged in with
             </Text>
+            <View style={styles.phoneContainer}>
+              <FontAwesome name="phone" size={20} color="#666" style={styles.phoneIcon} />
+              <Text style={styles.phoneNumber}>
+                {userProfile?.phoneNumber || 'No phone number'}
+              </Text>
+            </View>
           </View>
-          <View style={styles.infoRow}>
-            <FontAwesome name="clock-o" size={20} color="#666" />
-            <Text style={styles.infoText}>
-              Last Login: {new Date(authDetails?.lastLogin).toLocaleString()}
-            </Text>
-          </View>
-        </View>
 
-        <TouchableOpacity 
-          style={styles.logoutButton}
-          onPress={handleLogout}
-        >
-          <FontAwesome name="sign-out" size={20} color="#fff" />
-          <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.logoutButton}
+            onPress={handleLogout}
+          >
+            <FontAwesome name="sign-out" size={20} color="#fff" />
+            <Text style={styles.logoutText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -135,7 +111,7 @@ const ProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   container: {
@@ -147,53 +123,33 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  profileHeader: {
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 100, // Add some space from bottom
+  },
+  messageContainer: {
     alignItems: 'center',
     marginBottom: 30,
   },
-  avatarContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: '#f0f0f0',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  name: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 5,
-  },
-  email: {
+  messageText: {
     fontSize: 16,
     color: '#666',
+    marginBottom: 8,
   },
-  infoSection: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
-  },
-  infoRow: {
+  phoneContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-    gap: 15,
+    gap: 8,
   },
-  infoText: {
-    fontSize: 16,
+  phoneIcon: {
+    marginTop: 2,
+  },
+  phoneNumber: {
+    fontSize: 20,
     color: '#333',
-    flex: 1,
+    fontWeight: '600',
   },
   logoutButton: {
     backgroundColor: '#FF3B30',
@@ -203,6 +159,8 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     gap: 10,
+    width: '100%',
+    maxWidth: 300,
   },
   logoutText: {
     color: '#fff',

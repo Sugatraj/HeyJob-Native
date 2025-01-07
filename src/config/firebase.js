@@ -1,6 +1,6 @@
 import { initializeApp } from '@firebase/app';
 import { getFirestore } from '@firebase/firestore';
-import { initializeAuth, getReactNativePersistence, getAuth } from '@firebase/auth';
+import { initializeAuth, getReactNativePersistence, getAuth, PhoneAuthProvider } from '@firebase/auth';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -29,4 +29,4 @@ if (Platform.OS === 'web') {
   });
 }
 
-export { db, auth }; 
+export { db, auth, PhoneAuthProvider }; 

@@ -1,39 +1,41 @@
 import { 
   getAuth, 
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
   signOut,
-  sendPasswordResetEmail
+  signInWithPhoneNumber,
+  PhoneAuthProvider,
+  signInWithCredential
 } from '@firebase/auth';
 import { doc, setDoc } from '@firebase/firestore';
-import { db } from '../config/firebase';
-
-const auth = getAuth();
+import { db, auth } from '../config/firebase';
 
 export const authService = {
-  // Register new user
-  register: async (email, password, userData) => {
+  // Request OTP
+  requestOTP: async (phoneNumber, recaptchaVerifier) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      
-      // Create user profile in Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        email: user.email,
-        ...userData,
-        createdAt: new Date().toISOString()
-      });
-      
-      return user;
+      const phoneProvider = new PhoneAuthProvider(auth);
+      const verificationId = await phoneProvider.verifyPhoneNumber(
+        phoneNumber,
+        recaptchaVerifier
+      );
+      return verificationId;
     } catch (error) {
       throw error;
     }
   },
 
-  // Login user
-  login: async (email, password) => {
+  // Verify OTP and sign in
+  verifyOTP: async (verificationId, otp) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const credential = PhoneAuthProvider.credential(verificationId, otp);
+      const userCredential = await signInWithCredential(auth, credential);
+      
+      // Create or update user profile in Firestore
+      await setDoc(doc(db, 'users', userCredential.user.uid), {
+        phoneNumber: userCredential.user.phoneNumber,
+        createdAt: new Date().toISOString(),
+        lastLogin: new Date().toISOString()
+      }, { merge: true });
+
       return userCredential.user;
     } catch (error) {
       throw error;
@@ -44,15 +46,6 @@ export const authService = {
   logout: async () => {
     try {
       await signOut(auth);
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  // Reset password
-  resetPassword: async (email) => {
-    try {
-      await sendPasswordResetEmail(auth, email);
     } catch (error) {
       throw error;
     }
