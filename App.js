@@ -15,6 +15,7 @@ import RegisterScreen from './src/screens/RegisterScreen';
 import { getAuth, onAuthStateChanged } from '@firebase/auth';
 import Toast, { BaseToast } from 'react-native-toast-message';
 import { Platform } from 'react-native';
+import AllOpeningsScreen from './src/screens/AllOpeningsScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -81,6 +82,13 @@ function HomeStack() {
         component={HomeScreen} 
         options={{ 
           title: 'Hey Job',
+        }}
+      />
+      <Stack.Screen 
+        name="AllOpenings" 
+        component={AllOpeningsScreen}
+        options={{ 
+          title: 'All Openings',
         }}
       />
       <Stack.Screen 

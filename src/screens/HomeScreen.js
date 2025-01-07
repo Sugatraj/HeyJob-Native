@@ -12,20 +12,35 @@ import {
 import { FontAwesome } from '@expo/vector-icons';
 
 const CATEGORIES = [
-  { id: '1', name: 'WFH', icon: 'home' },
-  { id: '2', name: 'Internship', icon: 'graduation-cap' },
-  { id: '3', name: 'Drive', icon: 'car' },
-  { id: '4', name: 'Batches', icon: 'users' },
-  { id: '5', name: 'Openings', icon: 'briefcase' },
+  { id: '2', name: 'WFH', icon: 'home' },
+  { id: '3', name: 'Internship', icon: 'graduation-cap' },
+  { id: '4', name: 'Drive', icon: 'car' },
+  { id: '5', name: 'Batches', icon: 'users' },
 ];
 
 const HomeScreen = ({ navigation }) => {
   const handleCategoryPress = (categoryName) => {
-    navigation.navigate('CategoryJobs', {
-      category: categoryName,
-      title: categoryName
-    });
+    if (categoryName === 'All Openings') {
+      navigation.navigate('AllOpenings');
+    } else {
+      navigation.navigate('CategoryJobs', {
+        category: categoryName,
+        title: categoryName
+      });
+    }
   };
+
+  const renderAllOpeningsCard = () => (
+    <TouchableOpacity
+      style={styles.allOpeningsCard}
+      onPress={() => handleCategoryPress('All Openings')}
+    >
+      <View style={styles.allOpeningsContent}>
+        <FontAwesome name="briefcase" size={32} color="#666" />
+        <Text style={styles.allOpeningsTitle}>All Openings</Text>
+      </View>
+    </TouchableOpacity>
+  );
 
   const renderCategoryCard = (category) => (
     <View key={category.id} style={styles.categoryCard}>
@@ -44,6 +59,9 @@ const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
+        <View style={styles.allOpeningsContainer}>
+          {renderAllOpeningsCard()}
+        </View>
         <View style={styles.categoriesContainer}>
           <View style={styles.gridContainer}>
             {CATEGORIES.map(category => renderCategoryCard(category))}
@@ -64,18 +82,49 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
+  allOpeningsContainer: {
+    padding: 12,
+  },
+  allOpeningsCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+    height: 100,
+  },
+  allOpeningsContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    padding: 15,
+  },
+  allOpeningsTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
   categoriesContainer: {
     padding: 12,
   },
   gridContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: -6,
+    justifyContent: 'space-between',
+    marginHorizontal: -4,
   },
   categoryCard: {
-    width: '33.33%',
+    width: '25%',
     aspectRatio: 1,
-    padding: 6,
+    padding: 4,
   },
   cardInner: {
     flex: 1,
@@ -93,7 +142,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.18,
     shadowRadius: 1.0,
-    padding: 8,
+    padding: 6,
   },
   cardContent: {
     flex: 1,
@@ -101,10 +150,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   categoryName: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
     color: '#333',
-    marginTop: 12,
+    marginTop: 8,
     textAlign: 'center',
   },
 });
