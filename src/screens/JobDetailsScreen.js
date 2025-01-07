@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -8,7 +8,9 @@ import {
   TouchableOpacity, 
   Linking,
   Share,
-  Alert 
+  Alert,
+  Dimensions,
+  Clipboard 
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { formatDate } from '../utils/dateUtils';
@@ -21,28 +23,137 @@ const formatPackage = (value) => {
   return `${value} LPA`;
 };
 
+const socialIcons = [
+  { platform: 'whatsapp', color: '#25D366' },
+  { platform: 'facebook', color: '#4267B2' },
+  { platform: 'linkedin', color: '#0077B5' },
+  { platform: 'telegram', color: '#0088cc' },
+  { platform: 'instagram', color: '#E1306C' }
+];
+
 const JobDetailsScreen = ({ route, navigation }) => {
   const { job } = route.params;
   const isOwner = auth.currentUser?.uid === job.userId;
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
 
-  const handleShare = async () => {
+  useEffect(() => {
+    const { width } = Dimensions.get('window');
+    setIsSmallScreen(width < 380);
+  }, []);
+
+  const handleShare = async (platform) => {
     try {
       const shareMessage = `
-Job Opening: ${job.jobTitle}
-Position: ${job.jobPosition}
-Company: ${job.companyDetails}
-Location: ${job.location || 'Not specified'}
-Package: ${formatPackage(job.package)}
+🔥 *New Job Opening* 🔥
 
+*Position:* ${job.jobTitle}
+*Role:* ${job.jobPosition}
+*Company:* ${job.companyDetails}
+${job.location ? `*Location:* ${job.location}` : ''}
+${job.package ? `*Package:* ${formatPackage(job.package)}` : ''}
+
+*Job Description:*
 ${job.jobDescription}
-      `.trim();
 
-      await Share.share({
-        message: shareMessage,
-        title: job.jobTitle,
-      });
+--------------------------------
+📌 Apply now! 
+Share this opportunity with your friends who might be interested.
+
+#JobOpening #Career #Opportunity ${job.category ? `#${job.category.replace(/\s+/g, '')}` : ''}
+`.trim();
+
+      if (platform) {
+        let url = '';
+        switch (platform) {
+          case 'whatsapp':
+            url = `whatsapp://send?text=${encodeURIComponent(shareMessage)}`;
+            break;
+          case 'facebook':
+            url = `fb://share?text=${encodeURIComponent(shareMessage)}`;
+            break;
+          case 'linkedin':
+            url = `linkedin://sharing/share-offsite?subject=${encodeURIComponent(job.jobTitle)}&summary=${encodeURIComponent(shareMessage)}`;
+            break;
+          case 'telegram':
+            url = `tg://msg?text=${encodeURIComponent(shareMessage)}`;
+            break;
+          case 'instagram':
+            url = 'instagram://';
+            break;
+        }
+        const canOpen = await Linking.canOpenURL(url);
+        if (canOpen) {
+          await Linking.openURL(url);
+        } else {
+          // If app is not installed, open in browser
+          switch (platform) {
+            case 'whatsapp':
+              await Linking.openURL(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`);
+              break;
+            case 'facebook':
+              await Linking.openURL(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareMessage)}`);
+              break;
+            case 'linkedin':
+              await Linking.openURL(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareMessage)}`);
+              break;
+            case 'telegram':
+              await Linking.openURL(`https://t.me/share/url?url=${encodeURIComponent(shareMessage)}`);
+              break;
+            case 'instagram':
+              await Linking.openURL('https://www.instagram.com');
+              break;
+          }
+        }
+      } else {
+        await Share.share({
+          message: shareMessage,
+          title: job.jobTitle,
+        });
+      }
     } catch (error) {
       console.error('Error sharing:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to share'
+      });
+    }
+  };
+
+  const handleCopy = async () => {
+    try {
+      const shareMessage = `
+🔥 *New Job Opening* 🔥
+
+*Position:* ${job.jobTitle}
+*Role:* ${job.jobPosition}
+*Company:* ${job.companyDetails}
+${job.location ? `*Location:* ${job.location}` : ''}
+${job.package ? `*Package:* ${formatPackage(job.package)}` : ''}
+
+*Job Description:*
+${job.jobDescription}
+
+--------------------------------
+📌 Apply now! 
+Share this opportunity with your friends who might be interested.
+
+#JobOpening #Career #Opportunity ${job.category ? `#${job.category.replace(/\s+/g, '')}` : ''}
+`.trim();
+
+      await Clipboard.setString(shareMessage);
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Job details copied to clipboard! You can now paste and share.'
+      });
+    } catch (error) {
+      console.error('Error copying:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to copy to clipboard'
+      });
     }
   };
 
@@ -91,13 +202,62 @@ ${job.jobDescription}
         <Image source={{ uri: job.image }} style={styles.image} />
       )}
       
+      <View style={styles.shareSection}>
+        <View style={styles.socialIconsWrapper}>
+          <ScrollView 
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={[
+              styles.socialIconsContainer,
+              isSmallScreen && styles.socialIconsContainerSmall
+            ]}
+          >
+            {socialIcons.map((icon) => (
+              <TouchableOpacity
+                key={icon.platform}
+                style={[
+                  styles.iconButton,
+                  isSmallScreen && styles.iconButtonSmall
+                ]}
+                onPress={() => handleShare(icon.platform)}
+              >
+                <FontAwesome 
+                  name={icon.platform} 
+                  size={isSmallScreen ? 20 : 24} 
+                  color={icon.color}
+                />
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+
+        <View style={styles.copyButtonWrapper}>
+          <TouchableOpacity 
+            style={[
+              styles.copyButton,
+              isSmallScreen && styles.copyButtonSmall
+            ]} 
+            onPress={handleCopy}
+          >
+            <FontAwesome 
+              name="copy" 
+              size={isSmallScreen ? 20 : 24} 
+              color="#666" 
+            />
+            {!isSmallScreen && (
+              <Text style={styles.copyButtonText}>Copy</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+      
       <View style={styles.content}>
         <View style={styles.header}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{job.jobTitle}</Text>
             <Text style={styles.position}>{job.jobPosition}</Text>
           </View>
-          <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
+          <TouchableOpacity onPress={() => handleShare()} style={styles.shareButton}>
             <FontAwesome name="share-alt" size={24} color="#007AFF" />
           </TouchableOpacity>
         </View>
@@ -174,6 +334,67 @@ const styles = StyleSheet.create({
     width: '100%',
     aspectRatio: 1,
   },
+  shareSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginTop: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    borderRadius: 10,
+  },
+  socialIconsWrapper: {
+    flex: 1,
+  },
+  socialIconsContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingRight: 8,
+  },
+  socialIconsContainerSmall: {
+    gap: 4,
+    paddingRight: 4,
+  },
+  iconButton: {
+    backgroundColor: '#f5f5f5',
+    padding: 10,
+    borderRadius: 8,
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 4,
+  },
+  iconButtonSmall: {
+    padding: 8,
+    width: 36,
+    height: 36,
+  },
+  copyButtonWrapper: {
+    marginLeft: 'auto',
+  },
+  copyButton: {
+    backgroundColor: '#f5f5f5',
+    padding: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    height: 44,
+  },
+  copyButtonSmall: {
+    padding: 8,
+    paddingHorizontal: 8,
+    height: 36,
+  },
+  copyButtonText: {
+    fontSize: 14,
+    color: '#666',
+    fontWeight: '500',
+  },
   content: {
     padding: 20,
     paddingBottom: 0,
@@ -244,21 +465,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#444',
     lineHeight: 24,
-  },
-  linkButton: {
-    backgroundColor: '#007AFF',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
-  linkButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 10,
   },
   actionButtons: {
     flexDirection: 'row',
