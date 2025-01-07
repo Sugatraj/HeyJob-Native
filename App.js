@@ -128,31 +128,44 @@ function TabNavigator() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#000',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: "#000",
+        tabBarInactiveTintColor: "gray",
         tabBarStyle: {
           paddingBottom: 5,
           height: 55,
-        }
+        },
       }}
     >
-      <Tab.Screen 
-        name="HomeTab" 
+      <Tab.Screen
+        name="HomeTab"
         component={HomeStack}
         options={{
-          tabBarLabel: 'Home',
+          tabBarLabel: "Home",
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="home" size={size} color={color} />
           ),
         }}
       />
-      <Tab.Screen 
-        name="Profile" 
+      <Tab.Screen
+        name="AllOpeningsTab"
+        component={AllOpeningsScreen}
+        options={{
+          headerShown: true,
+          title: "All Openings",
+          headerTitleAlign: "center",
+          tabBarLabel: "All Openings",
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="briefcase" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
         component={ProfileScreen}
         options={{
           headerShown: true,
-          title: 'Profile',
-          headerTitleAlign: 'center',
+          title: "Profile",
+          headerTitleAlign: "center",
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="user" size={size} color={color} />
           ),
