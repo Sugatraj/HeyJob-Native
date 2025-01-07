@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Platform
 } from 'react-native';
-import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
+import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
 import { authService } from '../services/authService';
 import { auth } from '../config/firebase';
 
@@ -17,8 +17,28 @@ const LoginScreen = ({ navigation }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [verificationId, setVerificationId] = useState(null);
+  const [confirmationResult, setConfirmationResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const recaptchaVerifier = useRef(null);
+  const webRecaptchaVerifier = useRef(null);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const { RecaptchaVerifier } = require('firebase/auth');
+      if (!webRecaptchaVerifier.current) {
+        webRecaptchaVerifier.current = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          size: 'normal',
+          callback: () => {
+            // reCAPTCHA solved, allow signInWithPhoneNumber.
+          },
+          'expired-callback': () => {
+            // Response expired. Ask user to solve reCAPTCHA again.
+            Alert.alert('Error', 'reCAPTCHA expired. Please try again.');
+          }
+        });
+      }
+    }
+  }, []);
 
   const handleSendOTP = async () => {
     if (!phoneNumber || phoneNumber.length < 10) {
@@ -32,11 +52,18 @@ const LoginScreen = ({ navigation }) => {
         ? phoneNumber 
         : `+91${phoneNumber}`;
       
-      const verificationId = await authService.requestOTP(
+      const result = await authService.requestOTP(
         formattedPhoneNumber,
-        recaptchaVerifier.current
+        Platform.OS === 'web' ? webRecaptchaVerifier.current : recaptchaVerifier.current
       );
-      setVerificationId(verificationId);
+
+      if (Platform.OS === 'web') {
+        setConfirmationResult(result);
+        setVerificationId('web-verification');
+      } else {
+        setVerificationId(result);
+      }
+      
       Alert.alert('Success', 'OTP has been sent to your phone number');
     } catch (error) {
       console.error('Error sending OTP:', error);
@@ -54,7 +81,11 @@ const LoginScreen = ({ navigation }) => {
 
     setLoading(true);
     try {
-      await authService.verifyOTP(verificationId, otp);
+      if (Platform.OS === 'web') {
+        await authService.verifyOTP(confirmationResult, otp);
+      } else {
+        await authService.verifyOTP(verificationId, otp);
+      }
       // Navigation will be handled by the auth state listener in App.js
     } catch (error) {
       console.error('Error verifying OTP:', error);
@@ -66,10 +97,15 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <FirebaseRecaptchaVerifierModal
-        ref={recaptchaVerifier}
-        firebaseConfig={auth.app.options}
-      />
+      {Platform.OS === 'web' ? (
+        <div id="recaptcha-container" />
+      ) : (
+        <FirebaseRecaptchaVerifierModal
+          ref={recaptchaVerifier}
+          firebaseConfig={auth.app.options}
+          attemptInvisibleVerification={true}
+        />
+      )}
 
       <Text style={styles.title}>Welcome to HeyJob!</Text>
       
@@ -128,6 +164,7 @@ const LoginScreen = ({ navigation }) => {
             style={styles.resendButton}
             onPress={() => {
               setVerificationId(null);
+              setConfirmationResult(null);
               setOtp('');
             }}
           >
